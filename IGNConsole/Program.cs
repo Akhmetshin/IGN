@@ -53,10 +53,12 @@ namespace IGNConsole
                             mas[j] = float.Parse(w[j + 1], NumberStyles.Float | NumberStyles.AllowDecimalPoint | NumberStyles.AllowExponent, CultureInfo.InvariantCulture);
                         }
                         sw.Write("{0,7:f2} ", fd);
-                        
-                        MinSquareMas(43, mas, ref u, ref t, ref s);
-
-                        sw.Write("{0,9:f2} {1,7:f2} {2,7:f3} ", u, t, s);
+                        for (int j = 0; j < 43; j++)
+                        {
+                            for (int m = 0; m < 42; m++) mas[m] = mas[m + 1];
+                            if (-1 == MinSquareMas(43, mas, ref u, ref t, ref s)) break;
+                            sw.Write("({0,8:f2} {1,7:f2} {2,7:f3}) ", u, t, s);
+                        }
 
                         sw.WriteLine();
                         i++;
@@ -104,6 +106,12 @@ namespace IGNConsole
 
             u = Math.Exp(a);
             t = -1 / b;
+
+            if (double.IsInfinity(u)) return -1;
+            if (double.IsInfinity(t)) return -1;
+
+            if (0 > u) return -1;
+            if (0 > t) return -1;
 
             sum1 = 0;
             for (int i = 0; i < n; i++)
