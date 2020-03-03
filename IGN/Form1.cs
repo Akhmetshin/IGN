@@ -28,8 +28,8 @@ namespace IGN
         PointF[] pf;
         PointF[] pfT;
 
-        double U0;
-        double T2;
+        double U0 = 1;
+        double T2 = 0.5;
         double U0_2;
         double T2_2;
         int M = 0;
@@ -88,6 +88,9 @@ namespace IGN
             }
             trackBar1.Maximum = i - 1;
             trackBar1.TickFrequency = 50;
+
+            trackBar2.Maximum = 42;
+            trackBar2.TickFrequency = 5;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -144,13 +147,13 @@ namespace IGN
             for (int j = 0; j < 43; j++)
             {
                 pf[j].X = j * 20 + 150;
-                pf[j].Y = h0 - (data[trackBar1.Value, j] / 50) - 50;
+                pf[j].Y = h0 - (data[trackBar1.Value, j] / 50) - 150;
             }
             graf.DrawLines(pen, pf);
-            graf.DrawLine(Pens.Black, 150, h0 - 50, 43 * 20 + 150, h0 - 50);
+            graf.DrawLine(Pens.Black, 150, h0 - 150, 43 * 20 + 150, h0 - 150);
         }
 
-        private void MinSquareMas(int n, double[] mas, ref double u, ref double t)
+        private int MinSquareMas(int n, double[] mas, ref double u, ref double t, ref double s)
         {
             double x, y, m;
             double sum1, sum2, sum3, sum4;
@@ -172,11 +175,44 @@ namespace IGN
                 sum4 += x * x;
             }
 
+            if (m < 3)
+            {
+                u = -1;
+                t = -1;
+                s = -1;
+                return -1;
+            }
+
             double b = (sum2 * sum3 - m * sum1) / (sum2 * sum2 - m * sum4);
             double a = (sum3 - b * sum2) / m;
 
             u = Math.Exp(a);
             t = -1 / b;
+
+            if (double.IsInfinity(u)) return -1;
+            if (double.IsInfinity(t)) return -1;
+
+            if (0 > u) return -1;
+            if (0 > t) return -1;
+
+            sum1 = 0;
+            for (int i = 0; i < n; i++)
+            {
+                if (mas[i] < 0.001) continue;
+
+                x = i * 2;
+                y = Math.Log(mas[i]);
+                m++;
+                sum1 += (y - a - b * x) * (y - a - b * x);
+            }
+
+            if (m > 2)
+            {
+                s = sum1 / (m - 2);
+            }
+            else { s = 0; }
+
+            return 0;
         }
 
         private void MinSquare(int ind)
@@ -291,6 +327,7 @@ namespace IGN
             double[] masT = new double[43];
             double u = 0;
             double t = 0;
+            double s = 0;
             double delta = 0;
             int z = 0;
 
@@ -322,7 +359,7 @@ namespace IGN
 
                     sw.Write("{0,9:f2} {1,3}", delta, z);
 
-                    MinSquareMas(43 - z, mas, ref u, ref t);
+                    MinSquareMas(43 - z, mas, ref u, ref t, ref s);
                     sw.Write("  |  ");
                     sw.Write("{0,9:f2} {1,7:f2}", u, t);
 
@@ -335,6 +372,34 @@ namespace IGN
                 MessageBox.Show(ex.Message);
             }
 
+        }
+
+        private void trackBar2_Scroll(object sender, EventArgs e)
+        {
+            graf.FillRectangle(SolidBrushB, r);
+
+            for (int j = 0; j < 43; j++)
+            {
+                pf[j].X = j * 20 + 150;
+                pf[j].Y = h0 - (data[trackBar1.Value, j] / 50) - 150;
+            }
+            graf.DrawLines(pen, pf);
+
+            float d;
+            int k = trackBar2.Value;
+
+            MinSquare(trackBar1.Value);
+            
+            PointF[] p = new PointF[43- trackBar2.Value];
+
+            for (int j = 0; j < 43 - trackBar2.Value; j++)
+            {
+                p[j].X = k * 20 + 150;
+                k++;
+                d = (float)(U0 * Math.Exp(-(j * 2) / T2));
+                p[j].Y = h0 - (d / 50) - 150;
+            }
+            if (trackBar2.Value < 40) graf.DrawLines(Pens.Red, p);
         }
     }
 }
