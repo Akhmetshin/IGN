@@ -377,6 +377,8 @@ namespace IGN
         private void trackBar2_Scroll(object sender, EventArgs e)
         {
             graf.FillRectangle(SolidBrushB, r);
+            
+            label4.Text = trackBar2.Value.ToString();
 
             for (int j = 0; j < 43; j++)
             {
@@ -385,21 +387,42 @@ namespace IGN
             }
             graf.DrawLines(pen, pf);
 
+            //MinSquare(trackBar1.Value);
+
             float d;
             int k = trackBar2.Value;
 
-            MinSquare(trackBar1.Value);
-            
             PointF[] p = new PointF[43- trackBar2.Value];
+            double[] mas=new double[43 - trackBar2.Value];
+            double u = 0;
+            double t = 0;
+            double s = 0;
+
+            for (int j = 0; j < 43 - trackBar2.Value; j++)
+            {
+                mas[j] = data[trackBar1.Value, j + trackBar2.Value];
+            }
+            
+            int ret = MinSquareMas(43 - trackBar2.Value, mas, ref u, ref t, ref s);
+
+            if (ret == -1) return;
 
             for (int j = 0; j < 43 - trackBar2.Value; j++)
             {
                 p[j].X = k * 20 + 150;
                 k++;
-                d = (float)(U0 * Math.Exp(-(j * 2) / T2));
+                d = (float)(u * Math.Exp(-(j * 2) / t));
                 p[j].Y = h0 - (d / 50) - 150;
             }
             if (trackBar2.Value < 40) graf.DrawLines(Pens.Red, p);
+
+            for (int j = 0; j < 43; j++)
+            {
+                pfT[j].X = j * 20 + 150;
+                d = (float)(U0 * Math.Exp(-(j * 2) / T2));
+                pfT[j].Y = h0 - (d / 50) - 148;
+            }
+            graf.DrawLines(Pens.Gray, pfT);
         }
     }
 }
