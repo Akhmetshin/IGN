@@ -37,6 +37,7 @@ namespace IGNConsole
             double u = 0;
             double t = 0;
             double s = 0;
+            int l = 0;
 
             try
             {
@@ -58,13 +59,15 @@ namespace IGNConsole
                         MinSquareMas(43, mas, ref u, ref t, ref s);
                         sw.Write("({0,8:f2} {1,7:f2} {2,7:f3}) ", u, t, s);
 
+                        l = 0;
                         for (int j = 0; j < 43; j++)
                         {
                             for (int m = 0; m < 42 - j; m++) mas2[m] = mas[m + 1 + j];
                             if (-1 == MinSquareMas(43 - j, mas2, ref u, ref t, ref s)) break;
                             sw.Write("({0,8:f2} {1,7:f2} {2,7:f3}) ", u, t, s);
+                            l++;
                         }
-
+                        sw.Write("{0}", l);
                         sw.WriteLine();
                         i++;
                     }
