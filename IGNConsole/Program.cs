@@ -11,7 +11,9 @@ namespace IGNConsole
 {
     class Program
     {
-        static double[] mas = new double[43];
+        static double[] masOrig = new double[43];
+        static double[] masTeor2 = new double[43];
+        static double[] masNew = new double[43];
         static double[] mas2 = new double[43];
         static double[] masU = new double[43];
         static double[] masT = new double[43];
@@ -51,18 +53,19 @@ namespace IGNConsole
                         fd = float.Parse(w[0], NumberStyles.Float | NumberStyles.AllowDecimalPoint | NumberStyles.AllowExponent, CultureInfo.InvariantCulture);
                         for (int j = 0; j < 43; j++)
                         {
-                            mas[j] = float.Parse(w[j + 1], NumberStyles.Float | NumberStyles.AllowDecimalPoint | NumberStyles.AllowExponent, CultureInfo.InvariantCulture);
+                            masOrig[j] = float.Parse(w[j + 1], NumberStyles.Float | NumberStyles.AllowDecimalPoint | NumberStyles.AllowExponent, CultureInfo.InvariantCulture);
                         }
                         sw.Write("{0,7:f2} ", fd);
 
-                        MinSquareMas(43, mas, ref u, ref t, ref s);
+                        MinSquareMas(43, masOrig, ref u, ref t, ref s);
                         sw.Write("({0,8:f2} {1,7:f2} {2,7:f3}) ", u, t, s);
 
                         for (int j = 0; j < 43; j++)
                         {
-                            for (int m = 0; m < 42 - j; m++) mas2[m] = mas[m + 1 + j];
+                            for (int m = 0; m < 42 - j; m++) mas2[m] = masOrig[m + 1 + j];
                             if (-1 == MinSquareMas(43 - j, mas2, ref u, ref t, ref s)) break;
-                            sw.Write("({0,8:f2} {1,7:f2} {2,7:f3}) ", u, t, s);
+                            //sw.Write("({0,8:f2} {1,7:f2} {2,7:f3}) ", u, t, s);
+                            sw.Write(" {0,7:f3} ", s);
                         }
 
                         sw.WriteLine();

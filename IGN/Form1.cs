@@ -390,10 +390,11 @@ namespace IGN
             //MinSquare(trackBar1.Value);
 
             float d;
-            int k = trackBar2.Value;
+            int k = 0 - trackBar2.Value;
 
-            PointF[] p = new PointF[43- trackBar2.Value];
-            double[] mas=new double[43 - trackBar2.Value];
+            PointF[] p = new PointF[43];
+            double[] mas = new double[43 - trackBar2.Value];
+            double[] masNew = new double[43];
             double u = 0;
             double t = 0;
             double s = 0;
@@ -407,14 +408,35 @@ namespace IGN
 
             if (ret == -1) return;
 
-            for (int j = 0; j < 43 - trackBar2.Value; j++)
+            for (int j = 0; j < 43; j++)
             {
-                p[j].X = k * 20 + 150;
-                d = (float)(u * Math.Exp(-(j * 2) / t));
+                p[j].X = j * 20 + 150;
+                d = (float)(u * Math.Exp(-(k * 2) / t));
                 k++;
                 p[j].Y = h0 - (d / 50) - 150;
             }
             if (trackBar2.Value < 40) graf.DrawLines(Pens.Red, p);
+
+            k = 0 - trackBar2.Value;
+            for (int j = 0; j < 43; j++)
+            {
+                p[j].X = j * 20 + 152;
+                d = data[trackBar1.Value, j] - (float)(u * Math.Exp(-(k * 2) / t));
+                //if (d < 0) d *= -1;
+                k++;
+                p[j].Y = h0 - (d / 50) - 152;
+                masNew[j] = d;
+            }
+            if (trackBar2.Value < 40) graf.DrawLines(Pens.Green, p);
+            
+            ret = MinSquareMas(43, masNew, ref u, ref t, ref s);
+            for (int j = 0; j < 43; j++)
+            {
+                p[j].X = j * 20 + 150;
+                d = (float)(u * Math.Exp(-(j * 2) / t));
+                p[j].Y = h0 - (d / 50) - 150;
+            }
+            if (trackBar2.Value < 40) graf.DrawLines(Pens.DarkRed, p);
 
             for (int j = 0; j < 43; j++)
             {
