@@ -410,8 +410,8 @@ namespace IGN
             for (int j = 0; j < 43 - trackBar2.Value; j++)
             {
                 p[j].X = k * 20 + 150;
-                k++;
                 d = (float)(u * Math.Exp(-(j * 2) / t));
+                k++;
                 p[j].Y = h0 - (d / 50) - 150;
             }
             if (trackBar2.Value < 40) graf.DrawLines(Pens.Red, p);
