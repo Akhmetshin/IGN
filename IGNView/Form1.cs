@@ -77,11 +77,10 @@ namespace IGNView
             trackBar1.Maximum = i - 1;
             trackBar1.TickFrequency = 50;
 
-            //trackBar2.Maximum = 42;
-            //trackBar2.TickFrequency = 5;
+            trackBar2.Maximum = 42;
+            trackBar2.TickFrequency = 5;
         }
-
-        private void trackBar1_Scroll(object sender, EventArgs e)
+        private void MainDraw()
         {
             float[] masOrig = new float[43];
             float[] masWork = new float[43];
@@ -106,15 +105,34 @@ namespace IGNView
             double S_FAN = 0;
 
             label1.Text = depth[trackBar1.Value].ToString();
+            label2.Text = trackBar2.Value.ToString();
+
             graf.FillRectangle(SolidBrushB, r);
-            
+
             for (int j = 0; j < 43; j++) masOrig[j] = data[trackBar1.Value, j];
             DrawExp(43, masOrig, pen);
 
-            MinSquareMas(43, masOrig, ref U0_O, ref T2_O, ref S_O);
-            DrawExp(43, masWork, Pens.Red, U0_O, T2_O);
-            
+            MinSquareMas(43, masOrig, ref U0_O, ref T2_O, ref S_O); // рассчитал U0 и T2 для исходной экспоненты
+            DrawExp(43, masWork, Pens.Red, U0_O, T2_O); // теоретическая экспонента по U0 и T2
+
+            for (int j = 0; j < 43; j++) masFar[j] = 0;
+            for (int j = 0; j < 43 - trackBar2.Value; j++)
+            {
+                masFar[j] = masOrig[j + trackBar2.Value];
+            }
+            if (-1 == MinSquareMas(43, masFar, ref U0_W, ref T2_W, ref S_W)) return;
+
+            for (int j = 0; j < 43; j++) masNear[j] = masOrig[j] - masFar[j];
+            if (-1 == MinSquareMas(43, masNear, ref U0_N, ref T2_N, ref S_N)) return;
+
+            DrawExp(43, masNear, Pens.Blue, U0_N, T2_N);
+            DrawExp(43, masFar, Pens.Green, U0_W, T2_W);
+
             int n = 0;
+        }
+        private void trackBar1_Scroll(object sender, EventArgs e)
+        {
+            MainDraw();
         }
         private void DrawExp(int n, float[] mas, Pen p, double u, double t)
         {
@@ -201,6 +219,11 @@ namespace IGNView
             else { s = 0; }
 
             return 0;
+        }
+
+        private void trackBar2_Scroll(object sender, EventArgs e)
+        {
+            MainDraw();
         }
     }
 }
