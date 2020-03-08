@@ -108,25 +108,30 @@ namespace IGNView
             label2.Text = trackBar2.Value.ToString();
 
             graf.FillRectangle(SolidBrushB, r);
+            
+            int jMax = 43;
 
-            for (int j = 0; j < 43; j++) masOrig[j] = data[trackBar1.Value, j];
-            DrawExp(43, masOrig, pen);
+            for (int j = 0; j < jMax; j++) masOrig[j] = data[trackBar1.Value, j];
+            DrawExp(jMax, masOrig, pen);
 
-            MinSquareMas(43, masOrig, ref U0_O, ref T2_O, ref S_O); // рассчитал U0 и T2 для исходной экспоненты
-            DrawExp(43, masWork, Pens.Red, U0_O, T2_O); // теоретическая экспонента по U0 и T2
+            MinSquareMas(jMax, masOrig, ref U0_O, ref T2_O, ref S_O); // рассчитал U0 и T2 для исходной экспоненты
+            DrawExp(jMax, masWork, Pens.Red, U0_O, T2_O); // теоретическая экспонента по U0 и T2
 
             for (int j = 0; j < 43; j++) masFar[j] = 0;
-            for (int j = 0; j < 43 - trackBar2.Value; j++)
+            for (int j = 0; j < jMax - trackBar2.Value; j++)
             {
                 masFar[j] = masOrig[j + trackBar2.Value];
             }
-            if (-1 == MinSquareMas(43, masFar, ref U0_W, ref T2_W, ref S_W)) return;
+            if (-1 == MinSquareMas(jMax, masFar, ref U0_W, ref T2_W, ref S_W)) return;
 
-            for (int j = 0; j < 43; j++) masNear[j] = masOrig[j] - masFar[j];
-            if (-1 == MinSquareMas(43, masNear, ref U0_N, ref T2_N, ref S_N)) return;
+            for (int j = 0; j < jMax; j++) masNear[j] = masOrig[j] - masFar[j];
+            if (-1 == MinSquareMas(jMax, masNear, ref U0_N, ref T2_N, ref S_N)) return;
 
-            DrawExp(43, masNear, Pens.Blue, U0_N, T2_N);
-            DrawExp(43, masFar, Pens.Green, U0_W, T2_W);
+            //for (int j = 0; j < 43; j++) masWork[j] = masNear[j] + masFar[j] + 300;
+
+            DrawExp(jMax, masNear, Pens.Blue, U0_N, T2_N);
+            DrawExp(jMax, masFar, Pens.Green, U0_W, T2_W);
+            //DrawExp(43, masWork, Pens.Gray);
 
             int n = 0;
         }
@@ -136,7 +141,7 @@ namespace IGNView
         }
         private void DrawExp(int n, float[] mas, Pen p, double u, double t)
         {
-            PointF[] pf = new PointF[43];
+            PointF[] pf = new PointF[n];
             for (int j = 0; j < n; j++)
             {
                 mas[j]= (float)(u * Math.Exp(-(j * 2) / t));

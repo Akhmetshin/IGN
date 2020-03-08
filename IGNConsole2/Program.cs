@@ -1,29 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
-namespace IGNConsole
+namespace IGNConsole2
 {
     class Program
     {
-        static float[] masOrig = new float[43];
-        static float[] masTeor2 = new float[43];
-        static float[] masNew = new float[43];
-        static float[] mas2 = new float[43];
-        static float[] masU = new float[43];
-        static float[] masT = new float[43];
-        static float[] masS = new float[43];
-
         static void Main(string[] args)
         {
+            Console.WriteLine("Hello World!");
+
             File30();
         }
-
         private static void File30()
         {
             var culture = new System.Globalization.CultureInfo("en-US");
@@ -34,12 +23,34 @@ namespace IGNConsole
             string[] w;
             w = new string[43];
             char[] delimiterChars = { ' ', '\t', ';' };
-            int i = 0;
             float fd = 0;
             double u = 0;
             double t = 0;
             double s = 0;
             int l = 0;
+            int n = 0;
+
+            float[] masOrig = new float[43];
+            float[] masWork = new float[43];
+            float[] masFar = new float[43];
+            float[] masNear = new float[43];
+            float[] masFAN = new float[43];
+
+            double U0_O = 0;
+            double T2_O = 0;
+            double S_O = 0;
+            double U0_W = 0;
+            double T2_W = 0;
+            double S_W = 0;
+            double U0_F = 0;
+            double T2_F = 0;
+            double S_F = 0;
+            double U0_N = 0;
+            double T2_N = 0;
+            double S_N = 0;
+            double U0_FAN = 0;
+            double T2_FAN = 0;
+            double S_FAN = 0;
 
             try
             {
@@ -58,20 +69,54 @@ namespace IGNConsole
                         }
                         sw.Write("{0,7:f2} ", fd);
 
-                        MinSquareMas(43, masOrig, ref u, ref t, ref s);
-                        sw.Write("({0,8:f2} {1,7:f2} {2,7:f3}) ", u, t, s);
-
-                        l = 0;
+                        MinSquareMas(43, masOrig, ref U0_O, ref T2_O, ref S_O);
+                        sw.Write("({0,8:f2} {1,7:f2} {2,7:f3}) ", U0_O, T2_O, S_O);
+                        for (int j = 0; j < 43; j++) masWork[j] = 0;
                         for (int j = 0; j < 43; j++)
                         {
-                            for (int m = 0; m < 42 - j; m++) mas2[m] = masOrig[m + 1 + j];
-                            if (-1 == MinSquareMas(43 - j, mas2, ref u, ref t, ref s)) break;
-                            sw.Write("({0,8:f2} {1,7:f2} {2,7:f3}) ", u, t, s);
-                            l++;
+                            masWork[j] = (float)(U0_O * Math.Exp(-(j * 2) / T2_O));
                         }
-                        sw.Write("{0}", l);
+                        s = 0;
+                        for (int j = 0; j < 43; j++) s += (masOrig[j] - masWork[j]) * (masOrig[j] - masWork[j]);
+                        s = Math.Sqrt(s / 42);
+                        sw.Write("| {0,8:f3} | ", s);
+                        n = 0;
+                        for (l = 0; l < 41; l++)
+                        {
+                            for (int j = 0; j < 43; j++) masNear[j] = 0;
+                            for (int j = 0; j < 43; j++) masFar[j] = 0;
+
+                            for (int j = 0; j < 43; j++) masWork[j] = 0;
+                            for (int j = 0; j < 43 - l; j++) masWork[j] = masOrig[j + l];
+
+                            if (-1 == MinSquareMas(43, masWork, ref U0_F, ref T2_F, ref S_F)) continue;
+
+                            for (int j = 0; j < 43; j++)
+                            {
+                                masFar[j] = (float)(U0_F * Math.Exp(-(j * 2) / T2_F));
+                            }
+
+                            for (int j = 0; j < 43; j++) masWork[j] = 0;
+                            for (int j = 0; j < 43; j++) masWork[j] = masOrig[j] - masFar[j];
+
+                            if (-1 == MinSquareMas(43, masWork, ref U0_N, ref T2_N, ref S_N)) continue;
+
+                            for (int j = 0; j < 43; j++)
+                            {
+                                masNear[j] = (float)(U0_N * Math.Exp(-(j * 2) / T2_N));
+                            }
+
+                            for (int j = 0; j < 43; j++) masWork[j] = masNear[j] + masFar[j];
+
+                            s = 0;
+                            for (int j = 0; j < 43; j++) s += (masOrig[j] - masWork[j]) * (masOrig[j] - masWork[j]);
+                            s = Math.Sqrt(s / 42);
+                            sw.Write("{0,8:f3} ", s);
+
+                            n++;
+                        }
+                        sw.Write("{0}", n);
                         sw.WriteLine();
-                        i++;
                     }
                 }
                 sw.Close();
@@ -102,7 +147,7 @@ namespace IGNConsole
                 sum3 += y;
                 sum4 += x * x;
             }
-            
+
             if (m < 3)
             {
                 u = -1;
@@ -134,7 +179,7 @@ namespace IGNConsole
                 sum1 += (y - a - b * x) * (y - a - b * x);
             }
 
-            if(m>2)
+            if (m > 2)
             {
                 s = sum1 / (m - 2);
             }
