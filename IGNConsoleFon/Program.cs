@@ -3,14 +3,13 @@ using System.Globalization;
 using System.IO;
 using System.Threading;
 
-namespace IGNConsole2
+namespace IGNConsoleFon
 {
     class Program
     {
         static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
-
             File30();
         }
         private static void File30()
@@ -30,7 +29,7 @@ namespace IGNConsole2
             int l = 0;
             int n = 0;
 
-            float[] masOrig = new float[43];
+            float[] masOrig = new float[45]; // !!! 45 - это для поиска jMax !!!
             float[] masWork = new float[43];
             float[] masFar = new float[43];
             float[] masNear = new float[43];
@@ -55,7 +54,7 @@ namespace IGNConsole2
             try
             {
                 StreamReader sr30 = new StreamReader(@"D:\MyProgect\IGN\1017_спады 30.txt");
-                StreamWriter sw = new StreamWriter(@"D:\MyProgect\IGN\1017_30_UTS.txt");
+                StreamWriter sw = new StreamWriter(@"D:\MyProgect\IGN\1017_30_fon.txt");
                 line = sr30.ReadLine();
                 while ((line = sr30.ReadLine()) != null)
                 {
@@ -69,53 +68,35 @@ namespace IGNConsole2
                         }
                         sw.Write("{0,7:f2} ", fd);
 
-                        MinSquareMas(43, masOrig, ref U0_O, ref T2_O, ref S_O);
-                        sw.Write("({0,8:f2} {1,7:f2} {2,7:f3}) ", U0_O, T2_O, S_O);
-                        for (int j = 0; j < 43; j++) masWork[j] = 0;
+                        int jMax = 0;
                         for (int j = 0; j < 43; j++)
                         {
-                            masWork[j] = (float)(U0_O * Math.Exp(-(j * 2) / T2_O));
+                            if (masOrig[j] < 1)
+                            {
+                                if (masOrig[j + 1] < 1 || masOrig[j + 2] < 1) break;
+                            }
+                            jMax++;
                         }
-                        s = 0;
-                        for (int j = 0; j < 43; j++) s += (masOrig[j] - masWork[j]) * (masOrig[j] - masWork[j]);
-                        s = Math.Sqrt(s / 42);
-                        sw.Write("| {0,8:f3} | ", s);
-                        n = 0;
-                        for (l = 0; l < 41; l++)
+
+                        int indL = 0;
+                        int indR = 43;
+
+                        bool flagL = false;
+                        bool flagR = false;
+
+                        while (true)
                         {
-                            for (int j = 0; j < 43; j++) masNear[j] = 0;
-                            for (int j = 0; j < 43; j++) masFar[j] = 0;
+                            if (masOrig[indL] >= masOrig[indL + 1]) indL++;
+                            else flagL = true;
+                            if (masOrig[indR] >= masOrig[indR - 1]) indR--;
+                            else flagR = true;
 
-                            for (int j = 0; j < 43; j++) masWork[j] = 0;
-                            for (int j = 0; j < 43 - l; j++) masWork[j] = masOrig[j + l];
-
-                            if (-1 == MinSquareMas(43, masWork, ref U0_F, ref T2_F, ref S_F)) continue;
-
-                            for (int j = 0; j < 43; j++)
-                            {
-                                masFar[j] = (float)(U0_F * Math.Exp(-(j * 2) / T2_F));
-                            }
-
-                            for (int j = 0; j < 43; j++) masWork[j] = 0;
-                            for (int j = 0; j < 43; j++) masWork[j] = masOrig[j] - masFar[j];
-
-                            if (-1 == MinSquareMas(43, masWork, ref U0_N, ref T2_N, ref S_N)) continue;
-
-                            for (int j = 0; j < 43; j++)
-                            {
-                                masNear[j] = (float)(U0_N * Math.Exp(-(j * 2) / T2_N));
-                            }
-
-                            for (int j = 0; j < 43; j++) masWork[j] = masNear[j] + masFar[j];
-
-                            s = 0;
-                            for (int j = 0; j < 43; j++) s += (masOrig[j] - masWork[j]) * (masOrig[j] - masWork[j]);
-                            s = Math.Sqrt(s / 42);
-                            sw.Write("{0,8:f3} ", T2_F);
-
-                            n++;
+                            if (indL >= indR) break;
+                            if (flagL && flagR) { indL++; indR--; flagL = false; flagR = false; }
+                            if (indL >= indR) break;
                         }
-                        sw.Write("{0}", n);
+
+                        sw.Write("{0,3} {1,3} {2,3} {3,4} {4,4}", jMax, indL, indR, masOrig[indL], masOrig[indR]);
                         sw.WriteLine();
                     }
                 }
