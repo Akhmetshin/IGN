@@ -141,6 +141,10 @@ namespace IGNView
             }
             jMax = indL;
             label3.Text = jMax.ToString();
+            trackBar2.Maximum = jMax;
+            trackBar3.Minimum = 3;
+            trackBar3.Maximum = jMax;
+            trackBar3.Value = jMax;
 
             MinSquareMas(jMax, masOrig, ref U0_O, ref T2_O, ref S_O); // рассчитал U0 и T2 для исходной экспоненты
             for (int j = 0; j < jMax; j++)
@@ -279,6 +283,76 @@ namespace IGNView
         private void trackBar2_Scroll(object sender, EventArgs e)
         {
             MainDraw();
+        }
+
+        private void trackBar3_Scroll(object sender, EventArgs e)
+        {
+            float[] masOrig = new float[45]; // !!! 45 - это для поиска jMax !!!
+            float[] masWork = new float[43];
+            float[] masFar = new float[43];
+            float[] masNear = new float[43];
+            float[] masFAN = new float[43];
+
+            double U0_O = 0;
+            double T2_O = 0;
+            double S_O = 0;
+            double U0_W = 0;
+            double T2_W = 0;
+            double S_W = 0;
+            double U0_F = 0;
+            double T2_F = 0;
+            double S_F = 0;
+            double U0_N = 0;
+            double T2_N = 0;
+            double S_N = 0;
+            double U0_FAN = 0;
+            double T2_FAN = 0;
+            double S_FAN = 0;
+
+            label1.Text = depth[trackBar1.Value].ToString();
+            label2.Text = trackBar2.Value.ToString();
+            label4.Text = trackBar3.Value.ToString();
+
+            graf.FillRectangle(SolidBrushB, r);
+
+            for (int j = 0; j < 45; j++) masOrig[j] = 0;
+
+            int jMax = 43;
+            for (int j = 0; j < jMax; j++) masOrig[j] = data[trackBar1.Value, j];
+
+            jMax = trackBar3.Value;
+
+            label3.Text = jMax.ToString();
+            trackBar2.Maximum = jMax;
+
+            MinSquareMas(jMax, masOrig, ref U0_O, ref T2_O, ref S_O); // рассчитал U0 и T2 для исходной экспоненты
+            for (int j = 0; j < jMax; j++)
+            {
+                masWork[j] = (float)(U0_O * Math.Exp(-(j * 2) / T2_O));
+            }
+
+            DrawExp(jMax, masOrig, pen);
+
+            MinSquareMas(jMax, masOrig, ref U0_O, ref T2_O, ref S_O); // рассчитал U0 и T2 для исходной экспоненты
+            DrawExp(jMax, masWork, Pens.Red, U0_O, T2_O); // теоретическая экспонента по U0 и T2
+
+            for (int j = 0; j < 43; j++) masFar[j] = 0;
+            for (int j = 0; j < jMax - trackBar2.Value; j++)
+            {
+                masFar[j] = masOrig[j + trackBar2.Value];
+            }
+            if (-1 == MinSquareMas(jMax, masFar, ref U0_W, ref T2_W, ref S_W)) return;
+
+            for (int j = 0; j < jMax; j++) masNear[j] = masOrig[j] - masFar[j];
+            if (-1 == MinSquareMas(jMax, masNear, ref U0_N, ref T2_N, ref S_N)) return;
+
+            //for (int j = 0; j < 43; j++) masWork[j] = masNear[j] + masFar[j] + 300;
+
+            DrawExp(jMax, masNear, Pens.Blue, U0_N, T2_N);
+            DrawExp(jMax, masFar, Pens.Green, U0_W, T2_W);
+            DrawExp2(jMax, masWork, Pens.Gray, U0_N, T2_N, U0_W, T2_W);
+
+            int n = 0;
         }
     }
 }
