@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IGNConsoleFon", "IGNConsole
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IGNConsoleRight", "IGNConsoleRight\IGNConsoleRight.csproj", "{845695A8-5049-46CC-A5E1-1628607BA0D7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IGNConsoleT2Mas", "IGNConsoleT2Mas\IGNConsoleT2Mas.csproj", "{EE984F27-0FF1-4CEF-812F-FC5391045C19}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,10 @@ Global
 		{845695A8-5049-46CC-A5E1-1628607BA0D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{845695A8-5049-46CC-A5E1-1628607BA0D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{845695A8-5049-46CC-A5E1-1628607BA0D7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE984F27-0FF1-4CEF-812F-FC5391045C19}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE984F27-0FF1-4CEF-812F-FC5391045C19}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE984F27-0FF1-4CEF-812F-FC5391045C19}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE984F27-0FF1-4CEF-812F-FC5391045C19}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
