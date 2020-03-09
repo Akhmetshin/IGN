@@ -322,7 +322,6 @@ namespace IGNView
 
             jMax = trackBar3.Value;
 
-            label3.Text = jMax.ToString();
             trackBar2.Maximum = jMax;
 
             MinSquareMas(jMax, masOrig, ref U0_O, ref T2_O, ref S_O); // рассчитал U0 и T2 для исходной экспоненты
@@ -345,12 +344,19 @@ namespace IGNView
 
             for (int j = 0; j < jMax; j++) masNear[j] = masOrig[j] - masFar[j];
             if (-1 == MinSquareMas(jMax, masNear, ref U0_N, ref T2_N, ref S_N)) return;
+            label3.Text = jMax.ToString();
 
             //for (int j = 0; j < 43; j++) masWork[j] = masNear[j] + masFar[j] + 300;
 
             DrawExp(jMax, masNear, Pens.Blue, U0_N, T2_N);
             DrawExp(jMax, masFar, Pens.Green, U0_W, T2_W);
             DrawExp2(jMax, masWork, Pens.Gray, U0_N, T2_N, U0_W, T2_W);
+
+            double s = 0;
+            for (int j = 0; j < 43; j++) s += (masOrig[j] - masWork[j]) * (masOrig[j] - masWork[j]);
+            s = Math.Sqrt(s / 42);
+
+            label5.Text = s.ToString();
 
             int n = 0;
         }
