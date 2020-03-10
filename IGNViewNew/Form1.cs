@@ -90,8 +90,8 @@ namespace IGNViewNew
             double[] masWork = new double[43];
             double[] mas1 = new double[43];
             double[] mas2 = new double[43];
-            double[] mas1Teor = new double[43];
-            double[] mas2Teor = new double[43];
+            double[] masTail = new double[43];
+            double[] masTailTeor = new double[43];
 
             label1.Text = depth[trackBar1.Value].ToString();
             label2.Text = trackBar2.Value.ToString();
@@ -103,13 +103,30 @@ namespace IGNViewNew
             for (int j = 0; j < 43; j++) mas2[j] = 0;
 
             int jMax = 43;
+            int offset = 0;
+            int TailLen = 7;
             for (int j = 0; j < jMax; j++) masOrig[j] = data[trackBar1.Value, j];
+            double U0 = 0, T2 = 0, S = 0;
+            int n;
+            for (n = 0; n < 43; n++)
+            {
+                for (int j = 0; j < 43 - offset; j++) mas1[j] = masOrig[j + offset];
+                if (-1 == MinSquareMas(43 - offset, mas1, ref U0, ref T2, ref S)) break;
+                offset++;
+            }
+            jMax = n;
+            trackBar2.Maximum = jMax;
+            
+            label3.Text = jMax.ToString();
+
             for (int j = 0; j < trackBar2.Value; j++) mas1[j] = masOrig[j];
             int l = 0;
-            for (int j = trackBar2.Value - 1; j < 43; j++) { mas2[l] = masOrig[j]; l++; }
+            for (int j = trackBar2.Value - 1; j < jMax; j++) { mas2[l] = masOrig[j]; l++; }
+
+            for (int j = 0; j < TailLen; j++) masTail[j] = masOrig[j + jMax - TailLen];
 
             PointF[] pf1 = new PointF[trackBar2.Value];
-            PointF[] pf2 = new PointF[43 - trackBar2.Value];
+            PointF[] pf2 = new PointF[jMax - trackBar2.Value];
 
             for (int j = 0; j < trackBar2.Value; j++)
             {
@@ -118,12 +135,12 @@ namespace IGNViewNew
             }
             graf.DrawLines(pen1, pf1);
 
-            for (int j = 0; j < 43 - trackBar2.Value; j++)
+            for (int j = 0; j < jMax - trackBar2.Value; j++)
             {
                 pf2[j].X = (j + trackBar2.Value - 1) * 20;
                 pf2[j].Y = (float)(h0 - mas2[j] / 50);
             }
-            graf.DrawLines(pen2, pf2);
+            if (jMax - trackBar2.Value > 1) graf.DrawLines(pen2, pf2);
 
             double U0_1 = 0, T2_1 = 0, S_1 = 0;
             if (-1 == MinSquareMas(trackBar2.Value, mas1, ref U0_1, ref T2_1, ref S_1)) return;
@@ -131,11 +148,24 @@ namespace IGNViewNew
             double U0_2 = 0, T2_2 = 0, S_2 = 0;
             if (-1 == MinSquareMas(43 - trackBar2.Value, mas2, ref U0_2, ref T2_2, ref S_2)) return;
 
+            double U0_Tail = 0, T2_Tail = 0, S_Tail = 0;
+            if (-1 == MinSquareMas(TailLen, masTail, ref U0_Tail, ref T2_Tail, ref S_Tail)) return;
+
+            double[] mas1Teor = new double[43];
+            double[] mas2Teor = new double[43];
+            double[] mas1TeorDop = new double[jMax];
+            double[] mas2TeorDop = new double[jMax];
+
             for (int j = 0; j < trackBar2.Value; j++) mas1Teor[j] = (U0_1 * Math.Exp(-(j * 2) / T2_1));
             for (int j = 0; j < 43 - trackBar2.Value; j++) mas2Teor[j] = (U0_2 * Math.Exp(-(j * 2) / T2_2));
+            for (int j = 0; j < jMax; j++) masTailTeor[j] = (U0_Tail * Math.Exp(-((j - jMax + TailLen) * 2) / T2_Tail));
 
             PointF[] pf1Teor = new PointF[trackBar2.Value];
-            PointF[] pf2Teor = new PointF[43 - trackBar2.Value];
+            PointF[] pf2Teor = new PointF[jMax - trackBar2.Value];
+            PointF[] pf1TeorDop = new PointF[jMax];
+            PointF[] pf2TeorDop = new PointF[jMax - trackBar2.Value];
+
+            PointF[] pf1TeorTail = new PointF[jMax];
 
             for (int j = 0; j < trackBar2.Value; j++)
             {
@@ -144,12 +174,27 @@ namespace IGNViewNew
             }
             graf.DrawLines(Pens.Red, pf1Teor);
 
-            for (int j = 0; j < 43 - trackBar2.Value; j++)
+            for (int j = 0; j < jMax; j++) mas1TeorDop[j] = (U0_1 * Math.Exp(-(j * 2) / T2_1));
+            for (int j = 0; j < jMax; j++)
+            {
+                pf1TeorDop[j].X = j * 20;
+                pf1TeorDop[j].Y = (float)(h0 - mas1TeorDop[j] / 50);
+            }
+            graf.DrawLines(Pens.RosyBrown, pf1TeorDop);
+
+            for (int j = 0; j < jMax - trackBar2.Value; j++)
             {
                 pf2Teor[j].X = (j + trackBar2.Value - 1) * 20;
                 pf2Teor[j].Y = (float)(h0 - mas2Teor[j] / 50);
             }
-            graf.DrawLines(Pens.Green, pf2Teor);
+            if (jMax - trackBar2.Value > 1) graf.DrawLines(Pens.Green, pf2Teor);
+
+            for (int j = 0; j < jMax; j++)
+            {
+                pf1TeorTail[j].X = j * 20;
+                pf1TeorTail[j].Y = (float)(h0 - masTailTeor[j] / 50);
+            }
+            graf.DrawLines(Pens.Gray, pf1TeorTail);
         }
         private void trackBar1_Scroll(object sender, EventArgs e)
         {
