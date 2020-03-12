@@ -85,18 +85,19 @@ namespace IGNConsoleTest
                             T2_L = T2;
                             S_L = S;
                             offset++;
+                            if (S_O > S_L) break;
                         }
                         
                         int jMax = offset;
 
-                        for (int j = 0; j < tailLen; j++) mas1[j] = masOrig[j + jMax - tailLen];
-                        if (-1 == MinSquareMas(offset, mas1, ref U0, ref T2, ref S)) { Console.WriteLine("Error. -1 {0}", fd); sw.WriteLine("Error"); return; }
+                        //for (int j = 0; j < tailLen; j++) mas1[j] = masOrig[j + jMax - tailLen];
+                        //if (-1 == MinSquareMas(offset, mas1, ref U0, ref T2, ref S)) { Console.WriteLine("Error. -1 {0}", fd); sw.WriteLine("Error"); return; }
 
                         sw.Write("{0,-5}", l);
                         sw.Write("{0,7:f2} ", fd);
                         sw.Write("{0,4} ", jMax);
-                        //sw.Write("{0,7:f2} {1,7:f2} {2,7:f2} {3,7:f2} | ", T2_O, T2_L, S_O, S_L);
-                        sw.Write("({0,5:f2} {1,7:f4})", T2, S);
+                        sw.Write("{0,7:f2} {1,7:f2} {2,7:f2} {3,7:f2} | ", T2_O, T2_L, S_O, S_L);
+                        //sw.Write("({0,5:f2} {1,7:f4})", T2, S);
                         for (int j = 0; j < tailLen; j++) sw.Write("{0,7:f2} ", mas1[j]);
                         sw.WriteLine();
                         l++;
@@ -157,9 +158,11 @@ namespace IGNConsoleTest
                 if (mas[i] < 0.001) continue;
 
                 x = i * 2;
-                y = Math.Log(mas[i]);
+                //y = Math.Log(mas[i]);
+                y = mas[i];
                 m++;
-                sum1 += (y - a - b * x) * (y - a - b * x);
+                //sum1 += (y - a - b * x) * (y - a - b * x);
+                sum1 += (y - (u * Math.Exp(-x / t))) * (y - (u * Math.Exp(-x / t)));
             }
 
             if (m > 2)
