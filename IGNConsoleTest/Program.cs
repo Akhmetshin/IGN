@@ -41,6 +41,7 @@ namespace IGNConsoleTest
 
             double[] masOrig = new double[43];
             double[] mas1 = new double[43];
+            double[] masFarTeor = new double[43];
             double[] masWork = new double[43];
             double[] masU0 = new double[43];
             double[] masT2 = new double[43];
@@ -56,7 +57,7 @@ namespace IGNConsoleTest
             try
             {
                 StreamReader sr30 = new StreamReader(@"D:\MyProgect\IGN\1017_спады 30.txt");
-                StreamWriter sw = new StreamWriter(@"D:\MyProgect\IGN\1017_30_Test.txt");
+                StreamWriter sw = new StreamWriter(@"D:\MyProgect\IGN\1017_30_T2_mas.txt");
                 line = sr30.ReadLine();
                 while ((line = sr30.ReadLine()) != null)
                 {
@@ -73,6 +74,8 @@ namespace IGNConsoleTest
                         int tailLen = 7;
                         double U0 = 0, T2 = 0, S = 0;
                         double U0_L = 0, T2_L = 0, S_L = 0;
+                        sw.Write("{0,-5}", l);
+                        sw.Write("{0,7:f2} ", fd);
                         for (n = 0; n < 43 - tailLen; n++)
                         {
                             for (int j = 0; j < tailLen; j++) mas1[j] = masOrig[j + offset];
@@ -80,7 +83,9 @@ namespace IGNConsoleTest
                             U0_O = U0;
                             T2_O = T2;
                             S_O = S;
+                            sw.Write("({0,5:f2} {1,7:f2})  ", T2, S);
                             if (-1 == MinSquareMasLin(tailLen, mas1, ref U0, ref T2, ref S)) break;
+                            //sw.Write("({0,5:f2} {1,7:f2})  ", T2, S);
                             U0_L = U0;
                             T2_L = T2;
                             S_L = S;
@@ -92,19 +97,28 @@ namespace IGNConsoleTest
 
                         for (int j = 0; j < tailLen; j++) mas1[j] = masOrig[j + jMax - 1];
                         if (-1 == MinSquareMas(offset, mas1, ref U0, ref T2, ref S)) { Console.WriteLine("Error. -1 {0}", fd); sw.WriteLine("Error"); return; }
+                        
+                        for (int j = 0; j < tailLen; j++) masFarTeor[j] = (U0_O * Math.Exp(-((j - jMax) * 2) / T2_O));
 
-                        sw.Write("{0,-5}", l);
-                        sw.Write("{0,7:f2} ", fd);
-                        sw.Write("{0,4} ", jMax);
-                        sw.Write("{0,7:f2} {1,7:f2} {2,7:f2} {3,7:f2} | ", T2_O, T2_L, S_O, S_L);
-                        sw.Write("({0,5:f2} {1,7:f4})", T2, S);
+                        sw.Write(" |{0,4}", jMax);
+                        sw.Write("({0,5:f2} {1,7:f2})", T2, S);
 
-                        for (int j = 0; j < tailLen; j++) mas1[j] = masOrig[j + jMax - 1 - 1];
-                        if (-1 == MinSquareMas(offset, mas1, ref U0, ref T2, ref S)) { Console.WriteLine("Error. -1 {0}", fd); sw.WriteLine("Error"); return; }
-                        sw.Write("({0,5:f2} {1,7:f4})", T2, S);
+                        //sw.Write("{0,7:f2} {1,7:f2} {2,7:f2} {3,7:f2} | ", T2_O, T2_L, S_O, S_L);
+                        //sw.Write("({0,5:f2} {1,7:f4})", T2, S);
 
-                        for (int j = 0; j < tailLen; j++) sw.Write("{0,7:f2} ", mas1[j]);
+                        //for (int j = 0; j < tailLen; j++) mas1[j] = masOrig[j + jMax - 1 - 1];
+                        //if (-1 == MinSquareMas(offset, mas1, ref U0, ref T2, ref S)) { Console.WriteLine("Error. -1 {0}", fd); sw.WriteLine("Error"); return; }
+                        //sw.Write("({0,5:f2} {1,7:f4})", T2, S);
+
+                        //for (int j = 0; j < tailLen; j++) sw.Write("{0,7:f2} ", mas1[j]);
+                        //sw.WriteLine();
+
+                        //for (int j = 0; j < tailLen; j++) sw.Write("{0,7:f2} ", masOrig[j]);
+                        //sw.WriteLine();
+                        //for (int j = 0; j < tailLen; j++) sw.Write("{0,7:f2} ", masFarTeor[j]);
+                        //sw.WriteLine();
                         sw.WriteLine();
+
                         l++;
                     }
                 }
