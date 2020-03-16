@@ -125,7 +125,7 @@ namespace IGNViewNew3
                 offset++;
             }
 
-            int jMax = offset;
+            int jMax = offset - 1;
             trackBar2.Maximum = jMax - 3;
             label3.Text = jMax.ToString();
 
@@ -149,6 +149,30 @@ namespace IGNViewNew3
                 pf2[j].Y = (float)(h0 - mas2[j] / 50);
             }
             if (jMax - trackBar2.Value > 1) graf.DrawLines(pen2, pf2);
+
+            double U0_1 = 0, T2_1 = 0, S_1 = 0;
+            double U0_2 = 0, T2_2 = 0, S_2 = 0;
+            if (-1 == MinSquareMas2UT(trackBar2.Value, jMax - trackBar2.Value, masOrig, ref U0_1, ref T2_1, ref S_1, ref U0_2, ref T2_2, ref S_2)) return;
+
+            double[] mas1Teor = new double[43];
+            double[] mas2Teor = new double[43];
+            for (int j = 0; j < trackBar2.Value; j++) mas1Teor[j] = (U0_1 * Math.Exp(-(j * 2) / T2_1));
+            for (int j = 0; j < jMax - trackBar2.Value; j++) mas2Teor[j] = (U0_2 * Math.Exp(-(j * 2) / T2_2));
+            PointF[] pf1Teor = new PointF[trackBar2.Value];
+            PointF[] pf2Teor = new PointF[jMax - trackBar2.Value];
+            for (int j = 0; j < trackBar2.Value; j++)
+            {
+                pf1Teor[j].X = j * 20;
+                pf1Teor[j].Y = (float)(h0 - mas1Teor[j] / 50);
+            }
+            graf.DrawLines(Pens.Red, pf1Teor);
+
+            for (int j = 0; j < jMax - trackBar2.Value; j++)
+            {
+                pf2Teor[j].X = (j + trackBar2.Value - 1) * 20;
+                pf2Teor[j].Y = (float)(h0 - mas2Teor[j] / 50);
+            }
+            graf.DrawLines(Pens.Blue, pf2Teor);
         }
         private void trackBar1_Scroll(object sender, EventArgs e)
         {
@@ -217,6 +241,125 @@ namespace IGNViewNew3
                 s = sum1 / (m - 2);
             }
             else { s = 0; }
+
+            return 0;
+        }
+        private static int MinSquareMas2UT(int n1, int n2, double[] mas, ref double u, ref double t, ref double s, ref double u2, ref double t2, ref double s2)
+        {
+            double x, y, m;
+            double sum1, sum2, sum3, sum4;
+
+            sum1 = sum2 = sum3 = sum4 = 0;
+            m = 0;
+
+            double x2, y2, m2;
+            double sum1_2, sum2_2, sum3_2, sum4_2;
+
+            sum1_2 = sum2_2 = sum3_2 = sum4_2 = 0;
+            m2 = 0;
+
+            for (int i = 0; i < n1; i++)
+            {
+                if (mas[i] < 0.001) continue;
+
+                x = i * 2;
+                y = Math.Log(mas[i]);
+                m++;
+
+                sum1 += x * y;
+                sum2 += x;
+                sum3 += y;
+                sum4 += x * x;
+            }
+
+            if (m < 3)
+            {
+                u = -1;
+                t = -1;
+                s = -1;
+                return -1;
+            }
+
+            double b = (sum2 * sum3 - m * sum1) / (sum2 * sum2 - m * sum4);
+            double a = (sum3 - b * sum2) / m;
+
+            u = Math.Exp(a);
+            t = -1 / b;
+
+            if (double.IsInfinity(u)) return -1;
+            if (double.IsInfinity(t)) return -1;
+
+            if (0 > u) return -1;
+            if (0 > t) return -1;
+
+            sum1 = 0;
+            for (int i = 0; i < n1; i++)
+            {
+                if (mas[i] < 0.001) continue;
+
+                x = i * 2;
+                y = mas[i];
+                m++;
+                sum1 += (y - (u * Math.Exp(-x / t))) * (y - (u * Math.Exp(-x / t)));
+            }
+
+            if (m > 2)
+            {
+                s = sum1 / (m - 2);
+            }
+            else { s = 0; }
+
+            //********************************************************************************
+            for (int i = 0; i <= n2; i++)
+            {
+                if (mas[i + n1 - 1] < 0.001) continue;
+
+                x2 = i * 2;
+                y2 = Math.Log(mas[i + n1 - 1]);
+                m2++;
+
+                sum1_2 += x2 * y2;
+                sum2_2 += x2;
+                sum3_2 += y2;
+                sum4_2 += x2 * x2;
+            }
+
+            if (m2 < 3)
+            {
+                u2 = -1;
+                t2 = -1;
+                s2 = -1;
+                return -1;
+            }
+
+            double b2 = (sum2_2 * sum3_2 - m2 * sum1_2) / (sum2_2 * sum2_2 - m2 * sum4_2);
+            double a2 = (sum3_2 - b2 * sum2_2) / m2;
+
+            u2 = Math.Exp(a2);
+            t2 = -1 / b2;
+
+            if (double.IsInfinity(u2)) return -1;
+            if (double.IsInfinity(t2)) return -1;
+
+            if (0 > u2) return -1;
+            if (0 > t2) return -1;
+
+            sum1_2 = 0;
+            for (int i = 0; i <= n2; i++)
+            {
+                if (mas[i + n1 - 1] < 0.001) continue;
+
+                x2 = i * 2;
+                y2 = mas[i + n1 - 1];
+                m2++;
+                sum1_2 += (y2 - (u2 * Math.Exp(-x2 / t2))) * (y2 - (u2 * Math.Exp(-x2 / t2)));
+            }
+
+            if (m2 > 2)
+            {
+                s2 = sum1_2 / (m2 - 2);
+            }
+            else { s2 = 0; }
 
             return 0;
         }
