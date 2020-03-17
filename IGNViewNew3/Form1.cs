@@ -295,8 +295,8 @@ namespace IGNViewNew3
             if (double.IsInfinity(u)) return -1;
             if (double.IsInfinity(t)) return -1;
 
-            if (0 > u) return -1;
-            if (0 > t) return -1;
+            if (0 > u) return -2;
+            if (0 > t) return -2;
 
             sum1 = 0;
             m = 0;
@@ -350,8 +350,8 @@ namespace IGNViewNew3
             if (double.IsInfinity(u2)) return -1;
             if (double.IsInfinity(t2)) return -1;
 
-            if (0 > u2) return -1;
-            if (0 > t2) return -1;
+            if (0 > u2) return -2;
+            if (0 > t2) return -2;
 
             sum1_2 = 0;
             m2 = 0;
@@ -495,8 +495,36 @@ namespace IGNViewNew3
 
                     double U0_1 = 0, T2_1 = 0, S_1 = 0;
                     double U0_2 = 0, T2_2 = 0, S_2 = 0;
-                    if (-1 == MinSquareMas2UT(v, jMax - v - 1, masOrig, ref U0_1, ref T2_1, ref S_1, ref U0_2, ref T2_2, ref S_2)) return;
-                    sw.Write("{0,7:f3} {1,7:f3} {2,7:f3} {3,7:f3} ", T2_1, S_1, T2_2, S_2);
+                    double[] masU0_1 = new double[43];
+                    double[] masT2_1 = new double[43];
+                    double[] masS_1 = new double[43];
+                    double[] masU0_2 = new double[43];
+                    double[] masT2_2 = new double[43];
+                    double[] masS_2 = new double[43];
+                    double sMin = 10000;
+                    int indSMin = 0;
+                    for (int n = 3; n < jMax - tailLen; n++) // начинаем с 3-х точек для первой эксп.
+                    {
+                        int ret = MinSquareMas2UT(n, jMax - n - 1, masOrig, ref U0_1, ref T2_1, ref S_1, ref U0_2, ref T2_2, ref S_2);
+                        if (-1 == ret)
+                        {
+                            MessageBox.Show("if (-1 == MinSquareMas2UT(v, jMax - v - 1, masOrig, ref U0_1, ref T2_1, ref S_1, ref U0_2, ref T2_2, ref S_2))");
+                            return;
+                        }
+                        if (-2 == ret) continue;
+
+                        masU0_1[n] = U0_1;
+                        masT2_1[n] = T2_1;
+                        masS_1[n] = S_1;
+                        masU0_2[n] = U0_2;
+                        masT2_2[n] = T2_2;
+                        masS_2[n] = S_2;
+                    }
+                    for (int n = 3; n < jMax - tailLen; n++)
+                    {
+                        if (sMin > masS_1[n] + masS_2[n]) { sMin = masS_1[n] + masS_2[n]; indSMin = n; }
+                    }
+                    sw.Write("{0,7:f3} {1,7:f3} {2,7:f3} {3,7:f3} {4}", masT2_1[indSMin], masS_1[indSMin], masT2_2[indSMin], masS_2[indSMin], indSMin);
 
                     sw.WriteLine();
                 }
