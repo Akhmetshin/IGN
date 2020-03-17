@@ -228,14 +228,18 @@ namespace IGNViewNew3
             if (0 > t) return -1;
 
             sum1 = 0;
+            m = 0;
             for (int i = 0; i < n; i++)
             {
                 if (mas[i] < 0.001) continue;
 
                 x = i * 2;
                 y = Math.Log(mas[i]);
+                //y = mas[i];
                 m++;
                 sum1 += (y - a - b * x) * (y - a - b * x);
+                //sum1 += (y - (u * Math.Exp(-x / t))) * (y - (u * Math.Exp(-x / t)));
+
             }
 
             if (m > 2)
@@ -295,14 +299,17 @@ namespace IGNViewNew3
             if (0 > t) return -1;
 
             sum1 = 0;
+            m = 0;
             for (int i = 0; i <= n1; i++)
             {
                 if (mas[i] < 0.001) continue;
 
                 x = i * 2;
-                y = mas[i];
+                //y = mas[i];
+                y = Math.Log(mas[i]);
                 m++;
-                sum1 += (y - (u * Math.Exp(-x / t))) * (y - (u * Math.Exp(-x / t)));
+                //sum1 += (y - (u * Math.Exp(-x / t))) * (y - (u * Math.Exp(-x / t)));
+                sum1 += (y - a - b * x) * (y - a - b * x);
             }
 
             if (m > 2)
@@ -347,14 +354,17 @@ namespace IGNViewNew3
             if (0 > t2) return -1;
 
             sum1_2 = 0;
+            m2 = 0;
             for (int i = 0; i < n2; i++)
             {
                 if (mas[i + n1] < 0.001) continue;
 
                 x2 = i * 2;
-                y2 = mas[i + n1];
+                //y2 = mas[i + n1];
+                y2 = Math.Log(mas[i + n1]);
                 m2++;
-                sum1_2 += (y2 - (u2 * Math.Exp(-x2 / t2))) * (y2 - (u2 * Math.Exp(-x2 / t2)));
+                //sum1_2 += (y2 - (u2 * Math.Exp(-x2 / t2))) * (y2 - (u2 * Math.Exp(-x2 / t2)));
+                sum1_2 += (y2 - a2 - b2 * x2) * (y2 - a2 - b2 * x2);
             }
 
             if (m2 > 2)
@@ -428,6 +438,74 @@ namespace IGNViewNew3
             else { s = 0; }
 
             return 0;
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            double[] masOrig = new double[45]; // !!! 45 - это для поиска jMax !!!
+            double[] mas1 = new double[43];
+
+            int v = trackBar2.Value;
+            try
+            {
+                StreamWriter sw = new StreamWriter(@"D:\MyProgect\IGN\1017UTS.txt");
+
+                for (int cyrDepth = 0; cyrDepth < depth.Length; cyrDepth++)
+                {
+                    sw.Write("{0,7:f2} ", depth[cyrDepth]);
+
+                    for (int j = 0; j < 45; j++) masOrig[j] = 0;
+                    for (int j = 0; j < 43; j++) masOrig[j] = data[cyrDepth, j];
+                    for (int j = 0; j < 43; j++) mas1[j] = 0;
+
+                    double U0_O = 0;
+                    double T2_O = 0;
+                    double S_O = 0;
+                    double U0_W = 0;
+                    double T2_W = 0;
+                    double S_W = 0;
+
+                    int offset = 0;
+                    int tailLen = 7;
+                    double U0 = 0, T2 = 0, S = 0;
+                    double U0_L = 0, T2_L = 0, S_L = 0;
+                    for (int n = 0; n < 43 - tailLen; n++)
+                    {
+                        for (int j = 0; j < tailLen; j++) mas1[j] = masOrig[j + offset];
+                        if (-1 == MinSquareMas(tailLen, mas1, ref U0, ref T2, ref S)) break;
+                        U0_O = U0;
+                        T2_O = T2;
+                        S_O = S;
+                        if (-1 == MinSquareMasLin(tailLen, mas1, ref U0, ref T2, ref S)) break;
+                        U0_L = U0;
+                        T2_L = T2;
+                        S_L = S;
+                        if (S_O > S_L) break;
+                        offset++;
+                    }
+
+                    int jMax = offset - 1;
+
+                    if (-1 == MinSquareMas(jMax, masOrig, ref U0, ref T2, ref S))
+                    {
+                        MessageBox.Show("if (-1 == MinSquareMasLin(tailLen, mas1, ref U0, ref T2, ref S))");
+                        return;
+                    }
+                    sw.Write("{0,8:f2} {1,7:f2} {2,7:f3} ", U0, T2, S);
+
+                    double U0_1 = 0, T2_1 = 0, S_1 = 0;
+                    double U0_2 = 0, T2_2 = 0, S_2 = 0;
+                    if (-1 == MinSquareMas2UT(v, jMax - v - 1, masOrig, ref U0_1, ref T2_1, ref S_1, ref U0_2, ref T2_2, ref S_2)) return;
+                    sw.Write("{0,7:f3} {1,7:f3} {2,7:f3} {3,7:f3} ", T2_1, S_1, T2_2, S_2);
+
+                    sw.WriteLine();
+                }
+                sw.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
     }
 }
