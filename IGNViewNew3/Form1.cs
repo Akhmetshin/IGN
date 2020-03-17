@@ -91,7 +91,9 @@ namespace IGNViewNew3
             double[] mas2 = new double[43];
 
             label1.Text = depth[trackBar1.Value].ToString();
-            label2.Text = trackBar2.Value.ToString();
+            
+            int v = trackBar2.Value;
+            label2.Text = v.ToString();
 
             graf.FillRectangle(SolidBrushB, r);
 
@@ -129,47 +131,47 @@ namespace IGNViewNew3
             trackBar2.Maximum = jMax - 3;
             label3.Text = jMax.ToString();
 
-            for (int j = 0; j < trackBar2.Value; j++) mas1[j] = masOrig[j];
+            for (int j = 0; j <= v; j++) mas1[j] = masOrig[j];
             int l = 0;
-            for (int j = trackBar2.Value - 1; j < jMax; j++) { mas2[l] = masOrig[j]; l++; }
+            for (int j = v; j < jMax; j++) { mas2[l] = masOrig[j]; l++; }
 
-            PointF[] pf1 = new PointF[trackBar2.Value];
-            PointF[] pf2 = new PointF[jMax - trackBar2.Value];
+            PointF[] pf1 = new PointF[v + 1];
+            PointF[] pf2 = new PointF[jMax - v];
 
-            for (int j = 0; j < trackBar2.Value; j++)
+            for (int j = 0; j <= v; j++)
             {
                 pf1[j].X = j * 20;
                 pf1[j].Y = (float)(h0 - mas1[j] / 50);
             }
             graf.DrawLines(pen1, pf1);
 
-            for (int j = 0; j < jMax - trackBar2.Value; j++)
+            for (int j = 0; j < jMax - v; j++)
             {
-                pf2[j].X = (j + trackBar2.Value - 1) * 20;
+                pf2[j].X = (j + v) * 20;
                 pf2[j].Y = (float)(h0 - mas2[j] / 50);
             }
-            if (jMax - trackBar2.Value > 1) graf.DrawLines(pen2, pf2);
+            if (jMax - v > 1) graf.DrawLines(pen2, pf2);
 
             double U0_1 = 0, T2_1 = 0, S_1 = 0;
             double U0_2 = 0, T2_2 = 0, S_2 = 0;
-            if (-1 == MinSquareMas2UT(trackBar2.Value, jMax - trackBar2.Value, masOrig, ref U0_1, ref T2_1, ref S_1, ref U0_2, ref T2_2, ref S_2)) return;
+            if (-1 == MinSquareMas2UT(v, jMax - v - 1, masOrig, ref U0_1, ref T2_1, ref S_1, ref U0_2, ref T2_2, ref S_2)) return;
 
             double[] mas1Teor = new double[43];
             double[] mas2Teor = new double[43];
-            for (int j = 0; j < trackBar2.Value; j++) mas1Teor[j] = (U0_1 * Math.Exp(-(j * 2) / T2_1));
-            for (int j = 0; j < jMax - trackBar2.Value; j++) mas2Teor[j] = (U0_2 * Math.Exp(-(j * 2) / T2_2));
-            PointF[] pf1Teor = new PointF[trackBar2.Value];
-            PointF[] pf2Teor = new PointF[jMax - trackBar2.Value];
-            for (int j = 0; j < trackBar2.Value; j++)
+            for (int j = 0; j <= v; j++) mas1Teor[j] = (U0_1 * Math.Exp(-(j * 2) / T2_1));
+            for (int j = 0; j < jMax - v; j++) mas2Teor[j] = (U0_2 * Math.Exp(-(j * 2) / T2_2));
+            PointF[] pf1Teor = new PointF[v + 1];
+            PointF[] pf2Teor = new PointF[jMax - v];
+            for (int j = 0; j <= v; j++)
             {
                 pf1Teor[j].X = j * 20;
                 pf1Teor[j].Y = (float)(h0 - mas1Teor[j] / 50);
             }
             graf.DrawLines(Pens.Red, pf1Teor);
 
-            for (int j = 0; j < jMax - trackBar2.Value; j++)
+            for (int j = 0; j < jMax - v; j++)
             {
-                pf2Teor[j].X = (j + trackBar2.Value - 1) * 20;
+                pf2Teor[j].X = (j + v) * 20;
                 pf2Teor[j].Y = (float)(h0 - mas2Teor[j] / 50);
             }
             graf.DrawLines(Pens.Blue, pf2Teor);
@@ -258,7 +260,7 @@ namespace IGNViewNew3
             sum1_2 = sum2_2 = sum3_2 = sum4_2 = 0;
             m2 = 0;
 
-            for (int i = 0; i < n1; i++)
+            for (int i = 0; i <= n1; i++)
             {
                 if (mas[i] < 0.001) continue;
 
@@ -293,7 +295,7 @@ namespace IGNViewNew3
             if (0 > t) return -1;
 
             sum1 = 0;
-            for (int i = 0; i < n1; i++)
+            for (int i = 0; i <= n1; i++)
             {
                 if (mas[i] < 0.001) continue;
 
@@ -310,12 +312,12 @@ namespace IGNViewNew3
             else { s = 0; }
 
             //********************************************************************************
-            for (int i = 0; i <= n2; i++)
+            for (int i = 0; i < n2; i++)
             {
-                if (mas[i + n1 - 1] < 0.001) continue;
+                if (mas[i + n1] < 0.001) continue;
 
                 x2 = i * 2;
-                y2 = Math.Log(mas[i + n1 - 1]);
+                y2 = Math.Log(mas[i + n1]);
                 m2++;
 
                 sum1_2 += x2 * y2;
@@ -345,12 +347,12 @@ namespace IGNViewNew3
             if (0 > t2) return -1;
 
             sum1_2 = 0;
-            for (int i = 0; i <= n2; i++)
+            for (int i = 0; i < n2; i++)
             {
-                if (mas[i + n1 - 1] < 0.001) continue;
+                if (mas[i + n1] < 0.001) continue;
 
                 x2 = i * 2;
-                y2 = mas[i + n1 - 1];
+                y2 = mas[i + n1];
                 m2++;
                 sum1_2 += (y2 - (u2 * Math.Exp(-x2 / t2))) * (y2 - (u2 * Math.Exp(-x2 / t2)));
             }
