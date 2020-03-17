@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -16,9 +17,9 @@ namespace IGNViewNew3
     public partial class Form1 : Form
     {
         Graphics graf;
-        Pen pen1;
-        Pen pen2;
-        SolidBrush SolidBrushB;
+        readonly Pen pen1;
+        readonly Pen pen2;
+        readonly SolidBrush SolidBrushB;
         Rectangle r;
 
         float[] depth = new float[3199];
@@ -104,9 +105,6 @@ namespace IGNViewNew3
             double U0_O = 0;
             double T2_O = 0;
             double S_O = 0;
-            double U0_W = 0;
-            double T2_W = 0;
-            double S_W = 0;
 
             int offset = 0;
             int tailLen = 7;
@@ -158,8 +156,9 @@ namespace IGNViewNew3
 
             double[] mas1Teor = new double[43];
             double[] mas2Teor = new double[43];
-            for (int j = 0; j <= v; j++) mas1Teor[j] = (U0_1 * Math.Exp(-(j * 2) / T2_1));
-            for (int j = 0; j < jMax - v; j++) mas2Teor[j] = (U0_2 * Math.Exp(-(j * 2) / T2_2));
+            double ed = 2;
+            for (int j = 0; j <= v; j++) mas1Teor[j] = (U0_1 * Math.Exp(-(j * ed) / T2_1));
+            for (int j = 0; j < jMax - v; j++) mas2Teor[j] = (U0_2 * Math.Exp(-(j * ed) / T2_2));
             PointF[] pf1Teor = new PointF[v + 1];
             PointF[] pf2Teor = new PointF[jMax - v];
             for (int j = 0; j <= v; j++)
@@ -189,6 +188,7 @@ namespace IGNViewNew3
         {
             double x, y, m;
             double sum1, sum2, sum3, sum4;
+            double ed = 2;
 
             sum1 = sum2 = sum3 = sum4 = 0;
             m = 0;
@@ -197,7 +197,7 @@ namespace IGNViewNew3
             {
                 if (mas[i] < 0.001) continue;
 
-                x = i * 2;
+                x = i * ed;
                 y = Math.Log(mas[i]);
                 m++;
 
@@ -233,7 +233,7 @@ namespace IGNViewNew3
             {
                 if (mas[i] < 0.001) continue;
 
-                x = i * 2;
+                x = i * ed;
                 y = Math.Log(mas[i]);
                 //y = mas[i];
                 m++;
@@ -260,6 +260,7 @@ namespace IGNViewNew3
 
             double x2, y2, m2;
             double sum1_2, sum2_2, sum3_2, sum4_2;
+            double ed = 10;
 
             sum1_2 = sum2_2 = sum3_2 = sum4_2 = 0;
             m2 = 0;
@@ -268,7 +269,7 @@ namespace IGNViewNew3
             {
                 if (mas[i] < 0.001) continue;
 
-                x = i * 2;
+                x = i * ed;
                 y = Math.Log(mas[i]);
                 m++;
 
@@ -304,7 +305,7 @@ namespace IGNViewNew3
             {
                 if (mas[i] < 0.001) continue;
 
-                x = i * 2;
+                x = i * ed;
                 //y = mas[i];
                 y = Math.Log(mas[i]);
                 m++;
@@ -323,7 +324,7 @@ namespace IGNViewNew3
             {
                 if (mas[i + n1] < 0.001) continue;
 
-                x2 = i * 2;
+                x2 = i * ed;
                 y2 = Math.Log(mas[i + n1]);
                 m2++;
 
@@ -359,7 +360,7 @@ namespace IGNViewNew3
             {
                 if (mas[i + n1] < 0.001) continue;
 
-                x2 = i * 2;
+                x2 = i * ed;
                 //y2 = mas[i + n1];
                 y2 = Math.Log(mas[i + n1]);
                 m2++;
@@ -379,7 +380,7 @@ namespace IGNViewNew3
         {
             double x, y, m;
             double sum1, sum2, sum3, sum4;
-
+            double ed = 2;
             sum1 = sum2 = sum3 = sum4 = 0;
             m = 0;
 
@@ -387,7 +388,7 @@ namespace IGNViewNew3
             {
                 if (mas[i] < 0.001) continue;
 
-                x = i * 2;
+                x = i * ed;
                 //y = Math.Log(mas[i]);
                 y = mas[i];
                 m++;
@@ -424,7 +425,7 @@ namespace IGNViewNew3
             {
                 if (mas[i] < 0.001) continue;
 
-                x = i * 2;
+                x = i * ed;
                 //y = Math.Log(mas[i]);
                 y = mas[i];
                 m++;
@@ -442,6 +443,13 @@ namespace IGNViewNew3
 
         private void button1_Click(object sender, EventArgs e)
         {
+            int W = 1500;
+            int H = depth.Length;
+
+            Bitmap p = new Bitmap(W, H);
+            Graphics graphPNG = Graphics.FromImage(p);
+
+            graphPNG.Clear(Color.White);
             double[] masOrig = new double[45]; // !!! 45 - это для поиска jMax !!!
             double[] mas1 = new double[43];
 
@@ -461,9 +469,6 @@ namespace IGNViewNew3
                     double U0_O = 0;
                     double T2_O = 0;
                     double S_O = 0;
-                    double U0_W = 0;
-                    double T2_W = 0;
-                    double S_W = 0;
 
                     int offset = 0;
                     int tailLen = 7;
@@ -492,6 +497,8 @@ namespace IGNViewNew3
                         return;
                     }
                     sw.Write("{0,8:f2} {1,7:f2} {2,7:f3} ", U0, T2, S);
+                    //p.SetPixel((int)U0 / 100, cyrDepth, Color.Black);
+                    //p.SetPixel((int)T2 * 50, cyrDepth, Color.Azure);
 
                     double U0_1 = 0, T2_1 = 0, S_1 = 0;
                     double U0_2 = 0, T2_2 = 0, S_2 = 0;
@@ -525,6 +532,8 @@ namespace IGNViewNew3
                         if (sMin > masS_1[n] + masS_2[n]) { sMin = masS_1[n] + masS_2[n]; indSMin = n; }
                     }
                     sw.Write("{0,7:f3} {1,7:f3} {2,7:f3} {3,7:f3} {4}", masT2_1[indSMin], masS_1[indSMin], masT2_2[indSMin], masS_2[indSMin], indSMin);
+                    //p.SetPixel((int)masT2_1[indSMin] * 50, cyrDepth, Color.Red);
+                    //p.SetPixel((int)masT2_2[indSMin] * 10, cyrDepth, Color.Green);
 
                     sw.WriteLine();
                 }
@@ -534,6 +543,26 @@ namespace IGNViewNew3
             {
                 MessageBox.Show(ex.Message);
             }
+
+            p.Save(@"D:\MyProgect\IGN\123.png", ImageFormat.Png);
+            p.Dispose();
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            int W = 100;
+            int H = depth.Length;
+
+            Bitmap p = new Bitmap(W, H);
+            Graphics graphPNG = Graphics.FromImage(p);
+
+            graphPNG.Clear(Color.White);
+
+            graphPNG.DrawLine(Pens.Black, 0, 0, 50, H);
+
+            p.Save(@"D:\MyProgect\IGN\123.png", ImageFormat.Png);
+
+            p.Dispose();
         }
     }
 }
