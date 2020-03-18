@@ -26,7 +26,7 @@ namespace IGNViewNew3
         float[,] data = new float[3199, 43];
 
         int h0;
-        readonly double ed;
+        double ed;
         public Form1()
         {
             InitializeComponent();
@@ -499,7 +499,7 @@ namespace IGNViewNew3
                         return;
                     }
                     //sw.Write("{0,8:f2} {1,7:f2} {2,7:f3} ", U0, T2, S);
-                    sw.Write("{0,8:f2} {1,7:f2}  ", U0, T2, S);
+                    sw.Write("{0,8:f2} {1,7:f2} ", U0, T2, S);
                     //p.SetPixel((int)U0 / 100, cyrDepth, Color.Black);
                     //p.SetPixel((int)T2 * 50, cyrDepth, Color.Azure);
 
