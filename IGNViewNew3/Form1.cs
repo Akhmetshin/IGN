@@ -26,11 +26,13 @@ namespace IGNViewNew3
         float[,] data = new float[3199, 43];
 
         int h0;
+        readonly double ed;
         public Form1()
         {
             InitializeComponent();
 
             h0 = Height / 3 * 2;
+            ed = 100;
 
             SolidBrushB = new SolidBrush(BackColor);
             r = new Rectangle(0, 0, Width - 100, h0 + 1);
@@ -156,7 +158,7 @@ namespace IGNViewNew3
 
             double[] mas1Teor = new double[43];
             double[] mas2Teor = new double[43];
-            double ed = 2;
+            //double ed = 2;
             for (int j = 0; j <= v; j++) mas1Teor[j] = (U0_1 * Math.Exp(-(j * ed) / T2_1));
             for (int j = 0; j < jMax - v; j++) mas2Teor[j] = (U0_2 * Math.Exp(-(j * ed) / T2_2));
             PointF[] pf1Teor = new PointF[v + 1];
@@ -184,11 +186,11 @@ namespace IGNViewNew3
         {
             MainDraw();
         }
-        private static int MinSquareMas(int n, double[] mas, ref double u, ref double t, ref double s)
+        private int MinSquareMas(int n, double[] mas, ref double u, ref double t, ref double s)
         {
             double x, y, m;
             double sum1, sum2, sum3, sum4;
-            double ed = 2;
+            //double ed = 2;
 
             sum1 = sum2 = sum3 = sum4 = 0;
             m = 0;
@@ -250,7 +252,7 @@ namespace IGNViewNew3
 
             return 0;
         }
-        private static int MinSquareMas2UT(int n1, int n2, double[] mas, ref double u, ref double t, ref double s, ref double u2, ref double t2, ref double s2)
+        private int MinSquareMas2UT(int n1, int n2, double[] mas, ref double u, ref double t, ref double s, ref double u2, ref double t2, ref double s2)
         {
             double x, y, m;
             double sum1, sum2, sum3, sum4;
@@ -260,7 +262,7 @@ namespace IGNViewNew3
 
             double x2, y2, m2;
             double sum1_2, sum2_2, sum3_2, sum4_2;
-            double ed = 10;
+            //double ed = 10;
 
             sum1_2 = sum2_2 = sum3_2 = sum4_2 = 0;
             m2 = 0;
@@ -376,11 +378,11 @@ namespace IGNViewNew3
 
             return 0;
         }
-        private static int MinSquareMasLin(int n, double[] mas, ref double u, ref double t, ref double s)
+        private int MinSquareMasLin(int n, double[] mas, ref double u, ref double t, ref double s)
         {
             double x, y, m;
             double sum1, sum2, sum3, sum4;
-            double ed = 2;
+            //double ed = 2;
             sum1 = sum2 = sum3 = sum4 = 0;
             m = 0;
 
@@ -496,7 +498,8 @@ namespace IGNViewNew3
                         MessageBox.Show("if (-1 == MinSquareMasLin(tailLen, mas1, ref U0, ref T2, ref S))");
                         return;
                     }
-                    sw.Write("{0,8:f2} {1,7:f2} {2,7:f3} ", U0, T2, S);
+                    //sw.Write("{0,8:f2} {1,7:f2} {2,7:f3} ", U0, T2, S);
+                    sw.Write("{0,8:f2} {1,7:f2}  ", U0, T2, S);
                     //p.SetPixel((int)U0 / 100, cyrDepth, Color.Black);
                     //p.SetPixel((int)T2 * 50, cyrDepth, Color.Azure);
 
@@ -531,7 +534,8 @@ namespace IGNViewNew3
                     {
                         if (sMin > masS_1[n] + masS_2[n]) { sMin = masS_1[n] + masS_2[n]; indSMin = n; }
                     }
-                    sw.Write("{0,7:f3} {1,7:f3} {2,7:f3} {3,7:f3} {4}", masT2_1[indSMin], masS_1[indSMin], masT2_2[indSMin], masS_2[indSMin], indSMin);
+                    //sw.Write("{0,7:f3} {1,7:f3} {2,7:f3} {3,7:f3} {4}", masT2_1[indSMin], masS_1[indSMin], masT2_2[indSMin], masS_2[indSMin], indSMin);
+                    sw.Write("{0,7:f3}  {2,7:f3}", masT2_1[indSMin], masS_1[indSMin], masT2_2[indSMin], masS_2[indSMin], indSMin);
                     //p.SetPixel((int)masT2_1[indSMin] * 50, cyrDepth, Color.Red);
                     //p.SetPixel((int)masT2_2[indSMin] * 10, cyrDepth, Color.Green);
 
