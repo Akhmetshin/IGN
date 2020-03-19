@@ -445,13 +445,6 @@ namespace IGNViewNew3
 
         private void button1_Click(object sender, EventArgs e)
         {
-            int W = 1500;
-            int H = depth.Length;
-
-            Bitmap p = new Bitmap(W, H);
-            Graphics graphPNG = Graphics.FromImage(p);
-
-            graphPNG.Clear(Color.White);
             double[] masOrig = new double[45]; // !!! 45 - это для поиска jMax !!!
             double[] mas1 = new double[43];
 
@@ -500,8 +493,6 @@ namespace IGNViewNew3
                     }
                     //sw.Write("{0,8:f2} {1,7:f2} {2,7:f3} ", U0, T2, S);
                     sw.Write("{0,8:f2} {1,7:f2} ", U0, T2, S);
-                    //p.SetPixel((int)U0 / 100, cyrDepth, Color.Black);
-                    //p.SetPixel((int)T2 * 50, cyrDepth, Color.Azure);
 
                     double U0_1 = 0, T2_1 = 0, S_1 = 0;
                     double U0_2 = 0, T2_2 = 0, S_2 = 0;
@@ -536,8 +527,6 @@ namespace IGNViewNew3
                     }
                     //sw.Write("{0,7:f3} {1,7:f3} {2,7:f3} {3,7:f3} {4}", masT2_1[indSMin], masS_1[indSMin], masT2_2[indSMin], masS_2[indSMin], indSMin);
                     sw.Write("{0,7:f3}  {2,7:f3}", masT2_1[indSMin], masS_1[indSMin], masT2_2[indSMin], masS_2[indSMin], indSMin);
-                    //p.SetPixel((int)masT2_1[indSMin] * 50, cyrDepth, Color.Red);
-                    //p.SetPixel((int)masT2_2[indSMin] * 10, cyrDepth, Color.Green);
 
                     sw.WriteLine();
                 }
@@ -547,15 +536,17 @@ namespace IGNViewNew3
             {
                 MessageBox.Show(ex.Message);
             }
-
-            p.Save(@"D:\MyProgect\IGN\123.png", ImageFormat.Png);
-            p.Dispose();
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            int W = 100;
+            int W = 43;
             int H = depth.Length;
+
+            double[] masOrig = new double[45]; // !!! 45 - это для поиска jMax !!!
+            double[] mas1 = new double[43];
+
+            int v = trackBar2.Value;
 
             Bitmap p = new Bitmap(W, H);
             Graphics graphPNG = Graphics.FromImage(p);
@@ -563,6 +554,75 @@ namespace IGNViewNew3
             graphPNG.Clear(Color.White);
 
             graphPNG.DrawLine(Pens.Black, 0, 0, 50, H);
+            for (int cyrDepth = 0; cyrDepth < depth.Length; cyrDepth++)
+            {
+                for (int j = 0; j < 45; j++) masOrig[j] = 0;
+                for (int j = 0; j < 43; j++) masOrig[j] = data[cyrDepth, j];
+                for (int j = 0; j < 43; j++) mas1[j] = 0;
+
+                double U0_O = 0;
+                double T2_O = 0;
+                double S_O = 0;
+
+                int offset = 0;
+                int tailLen = 7;
+                double U0 = 0, T2 = 0, S = 0;
+                double U0_L = 0, T2_L = 0, S_L = 0;
+                for (int n = 0; n < 43 - tailLen; n++)
+                {
+                    for (int j = 0; j < tailLen; j++) mas1[j] = masOrig[j + offset];
+                    if (-1 == MinSquareMas(tailLen, mas1, ref U0, ref T2, ref S)) break;
+                    U0_O = U0;
+                    T2_O = T2;
+                    S_O = S;
+                    if (-1 == MinSquareMasLin(tailLen, mas1, ref U0, ref T2, ref S)) break;
+                    U0_L = U0;
+                    T2_L = T2;
+                    S_L = S;
+                    if (S_O > S_L) break;
+                    offset++;
+                }
+
+                int jMax = offset - 1;
+
+                if (-1 == MinSquareMas(jMax, masOrig, ref U0, ref T2, ref S))
+                {
+                    MessageBox.Show("if (-1 == MinSquareMasLin(tailLen, mas1, ref U0, ref T2, ref S))");
+                    return;
+                }
+
+                double U0_1 = 0, T2_1 = 0, S_1 = 0;
+                double U0_2 = 0, T2_2 = 0, S_2 = 0;
+                double[] masU0_1 = new double[43];
+                double[] masT2_1 = new double[43];
+                double[] masS_1 = new double[43];
+                double[] masU0_2 = new double[43];
+                double[] masT2_2 = new double[43];
+                double[] masS_2 = new double[43];
+                double sMin = 10000;
+                int indSMin = 0;
+                for (int n = 3; n < jMax - tailLen; n++) // начинаем с 3-х точек для первой эксп.
+                {
+                    int ret = MinSquareMas2UT(n, jMax - n - 1, masOrig, ref U0_1, ref T2_1, ref S_1, ref U0_2, ref T2_2, ref S_2);
+                    if (-1 == ret)
+                    {
+                        MessageBox.Show("if (-1 == MinSquareMas2UT(v, jMax - v - 1, masOrig, ref U0_1, ref T2_1, ref S_1, ref U0_2, ref T2_2, ref S_2))");
+                        return;
+                    }
+                    if (-2 == ret) continue;
+
+                    masU0_1[n] = U0_1;
+                    masT2_1[n] = T2_1;
+                    masS_1[n] = S_1;
+                    masU0_2[n] = U0_2;
+                    masT2_2[n] = T2_2;
+                    masS_2[n] = S_2;
+                }
+                for (int n = 3; n < jMax - tailLen; n++)
+                {
+                    if (sMin > masS_1[n] + masS_2[n]) { sMin = masS_1[n] + masS_2[n]; indSMin = n; }
+                }
+            }
 
             p.Save(@"D:\MyProgect\IGN\123.png", ImageFormat.Png);
 
