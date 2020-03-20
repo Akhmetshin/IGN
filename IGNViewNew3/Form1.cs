@@ -537,7 +537,19 @@ namespace IGNViewNew3
                 MessageBox.Show(ex.Message);
             }
         }
-
+        /// <summary>Blends the specified colors together.</summary>
+        /// <param name="color">Color to blend onto the background color.</param>
+        /// <param name="backColor">Color to blend the other color onto.</param>
+        /// <param name="amount">How much of <paramref name="color"/> to keep,
+        /// “on top of” <paramref name="backColor"/>.</param>
+        /// <returns>The blended colors.</returns>
+        private Color Blend(Color color, Color backColor, double amount)
+        {
+            byte r = (byte)((color.R * amount) + backColor.R * (1 - amount));
+            byte g = (byte)((color.G * amount) + backColor.G * (1 - amount));
+            byte b = (byte)((color.B * amount) + backColor.B * (1 - amount));
+            return Color.FromArgb(r, g, b);
+        }
         private void button2_Click(object sender, EventArgs e)
         {
             int W = 43;
@@ -553,12 +565,20 @@ namespace IGNViewNew3
 
             graphPNG.Clear(Color.White);
 
-            graphPNG.DrawLine(Pens.Black, 0, 0, 50, H);
+            //graphPNG.DrawLine(Pens.Black, 0, 0, W, H);
             for (int cyrDepth = 0; cyrDepth < depth.Length; cyrDepth++)
             {
                 for (int j = 0; j < 45; j++) masOrig[j] = 0;
                 for (int j = 0; j < 43; j++) masOrig[j] = data[cyrDepth, j];
                 for (int j = 0; j < 43; j++) mas1[j] = 0;
+                
+                for (int j = 0; j < 43; j++)
+                {
+                    int red = Math.Min((int)(masOrig[j]), 255);
+                    
+
+                    p.SetPixel(j, cyrDepth, Color.FromArgb(255 - red, 255, 255));
+                }
 
                 double U0_O = 0;
                 double T2_O = 0;
