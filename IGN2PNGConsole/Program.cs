@@ -151,13 +151,13 @@ namespace IGN2PNGConsole
                                 else
                                 {
                                     amount = (mas1Delta[j] - g1) / (g2 - g1);
-                                    p.SetPixel(j, n, Blend(Color.LightBlue, Color.Black, amount));
+                                    p.SetPixel(j, n, Blend(Color.LightBlue, Color.Blue, amount));
                                 }
                             }
                             else
                             {
                                 amount = -1;
-                                p.SetPixel(j, n, Color.White);
+                                p.SetPixel(j, n, Blend(Color.Blue, Color.Gray, mas1Delta[j]));
                             }
                             sw.Write("{0,7:f2} {1,7:f2}  ", mas1Delta[j], amount);
                         }
@@ -176,7 +176,24 @@ namespace IGN2PNGConsole
 
             p.Dispose();
 
-            Process.Start(@"D:\MyProgect\123456.png");
+            //Process.Start(@"D:\MyProgect\123456.png");
+
+            Bitmap pS = new Bitmap(250, 10);
+            Graphics graphPNG_S = Graphics.FromImage(pS);
+
+            graphPNG_S.Clear(Color.White);
+            for(int i=0;i<10;i++)
+            {
+                for (int j = 0; j < 50; j++)    pS.SetPixel(j, i, Blend(Color.Red, Color.Yellow, 1 - 0.02 * j));
+                for (int j = 50; j < 100; j++)  pS.SetPixel(j, i, Blend(Color.Yellow, Color.Green, 1 - 0.02 * (j - 50)));
+                for (int j = 100; j < 150; j++) pS.SetPixel(j, i, Blend(Color.Green, Color.LightBlue, 1 - 0.02 * (j - 100)));
+                for (int j = 150; j < 200; j++) pS.SetPixel(j, i, Blend(Color.LightBlue, Color.Blue, 1 - 0.02 * (j - 150)));
+                for (int j = 200; j < 250; j++) pS.SetPixel(j, i, Blend(Color.Blue, Color.Gray, 1 - 0.02 * (j - 200)));
+            }
+
+            pS.Save(@"D:\MyProgect\123456_Scale.png", ImageFormat.Png);
+
+            pS.Dispose();
         }
 
         private static int GetJMax(double[] masOrig, double[] mas1)
