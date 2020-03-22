@@ -88,11 +88,14 @@ namespace IGN2PNGConsole
             double g2 = masMax[3] / 5 * 2;
             double g1 = masMax[3] / 5;
 
-            double amount;
+            double amount = 0;
+            //n = 0;
             n--;
             try
             {
                 StreamReader sr30 = new StreamReader(@"D:\MyProgect\IGN\1017_спады 30.txt");
+                StreamWriter sw = new StreamWriter(@"D:\MyProgect\IGN\amount.txt");
+
                 line = sr30.ReadLine();
                 while ((line = sr30.ReadLine()) != null)
                 {
@@ -100,6 +103,8 @@ namespace IGN2PNGConsole
                     if (w.Length > 0)
                     {
                         fd = float.Parse(w[0], NumberStyles.Float | NumberStyles.AllowDecimalPoint | NumberStyles.AllowExponent, CultureInfo.InvariantCulture);
+                        sw.Write("{0,7:f2} ", fd);
+
                         for (int j = 0; j < 43; j++)
                         {
                             masOrig[j] = float.Parse(w[j + 1], NumberStyles.Float | NumberStyles.AllowDecimalPoint | NumberStyles.AllowExponent, CultureInfo.InvariantCulture);
@@ -155,8 +160,11 @@ namespace IGN2PNGConsole
                             }
                         }
                         n--;
+                        sw.Write("{0,7:f2} ", amount);
+                        sw.WriteLine();
                     }
                 }
+                sw.Close();
                 sr30.Close();
             }
             catch (Exception ex)
