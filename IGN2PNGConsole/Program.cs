@@ -94,7 +94,7 @@ namespace IGN2PNGConsole
             try
             {
                 StreamReader sr30 = new StreamReader(@"D:\MyProgect\IGN\1017_спады 30.txt");
-                StreamWriter sw = new StreamWriter(@"D:\MyProgect\IGN\amount.txt");
+                StreamWriter sw = new StreamWriter(@"D:\MyProgect\amount.txt");
 
                 line = sr30.ReadLine();
                 while ((line = sr30.ReadLine()) != null)
@@ -145,22 +145,23 @@ namespace IGN2PNGConsole
                                     else
                                     {
                                         amount = (mas1Delta[j] - g2) / (g3 - g2);
-                                        p.SetPixel(j, n, Blend(Color.Green, Color.Blue, amount));
+                                        p.SetPixel(j, n, Blend(Color.Green, Color.LightBlue, amount));
                                     }
                                 }
                                 else
                                 {
                                     amount = (mas1Delta[j] - g1) / (g2 - g1);
-                                    p.SetPixel(j, n, Blend(Color.Blue, Color.Black, amount));
+                                    p.SetPixel(j, n, Blend(Color.LightBlue, Color.Black, amount));
                                 }
                             }
                             else
                             {
+                                amount = -1;
                                 p.SetPixel(j, n, Color.White);
                             }
+                            sw.Write("{0,7:f2} {1,7:f2}  ", mas1Delta[j], amount);
                         }
                         n--;
-                        sw.Write("{0,7:f2} ", amount);
                         sw.WriteLine();
                     }
                 }
@@ -171,11 +172,11 @@ namespace IGN2PNGConsole
             {
                 Console.WriteLine(ex.Message);
             }
-            p.Save(@"D:\MyProgect\IGN\123456.png", ImageFormat.Png);
+            p.Save(@"D:\MyProgect\123456.png", ImageFormat.Png);
 
             p.Dispose();
 
-            Process.Start(@"D:\MyProgect\IGN\123456.png");
+            Process.Start(@"D:\MyProgect\123456.png");
         }
 
         private static int GetJMax(double[] masOrig, double[] mas1)
