@@ -14,10 +14,12 @@ namespace IGN2PNGConsole
 {
     class Program
     {
+        static double ed = 100;
         static void Main(string[] args)
         {
             double[] masOrig = new double[45]; // !!! 45 - это для поиска jMax !!!
             double[] mas1 = new double[43];
+            double[] mas1Delta = new double[43];
 
             var culture = new System.Globalization.CultureInfo("en-US");
             Thread.CurrentThread.CurrentCulture = culture;
@@ -43,11 +45,24 @@ namespace IGN2PNGConsole
                         fd = float.Parse(w[0], NumberStyles.Float | NumberStyles.AllowDecimalPoint | NumberStyles.AllowExponent, CultureInfo.InvariantCulture);
                         for (int j = 0; j < 43; j++)
                         {
-                            masOrig[j] = Math.Log(float.Parse(w[j + 1], NumberStyles.Float | NumberStyles.AllowDecimalPoint | NumberStyles.AllowExponent, CultureInfo.InvariantCulture));
+                            masOrig[j] = float.Parse(w[j + 1], NumberStyles.Float | NumberStyles.AllowDecimalPoint | NumberStyles.AllowExponent, CultureInfo.InvariantCulture);
                         }
-                        for (int j = 0; j < 43; j++)
+
+                        int jMax = GetJMax(masOrig, mas1);
+
+                        double U0 = 0, T2 = 0, S = 0;
+                        if (-1 == MinSquareMas(jMax, masOrig, ref U0, ref T2, ref S))
                         {
-                            if (masMax[0] < masOrig[j]) masMax[0] = masOrig[j];
+                            Console.WriteLine("if (-1 == MinSquareMas(jMax, masOrig, ref U0, ref T2, ref S))");
+                            return;
+                        }
+                        for (int j = 0; j < jMax; j++)
+                        {
+                            mas1Delta[j] = Math.Log(Math.Sqrt((masOrig[j] - (U0 * Math.Exp(-(j * ed) / T2))) * (masOrig[j] - (U0 * Math.Exp(-(j * ed) / T2)))));
+                        }
+                        for (int j = 0; j < jMax; j++)
+                        {
+                            if (masMax[0] < mas1Delta[j]) masMax[0] = mas1Delta[j];
                             Array.Sort(masMax);
                         }
                         n++;
@@ -68,14 +83,12 @@ namespace IGN2PNGConsole
 
             graphPNG.Clear(Color.White);
 
-            //graphPNG.DrawLine(Pens.Black, 0, 0, W, H);
-            double g4 = masMax[3] / 4 * 3;
-            double g3 = masMax[3] / 4 * 2;
-            double g2 = masMax[3] / 4;
+            double g4 = masMax[3] / 5 * 4;
+            double g3 = masMax[3] / 5 * 3;
+            double g2 = masMax[3] / 5 * 2;
             double g1 = masMax[3] / 5;
 
             double amount;
-            //n = 0;
             n--;
             try
             {
@@ -89,44 +102,55 @@ namespace IGN2PNGConsole
                         fd = float.Parse(w[0], NumberStyles.Float | NumberStyles.AllowDecimalPoint | NumberStyles.AllowExponent, CultureInfo.InvariantCulture);
                         for (int j = 0; j < 43; j++)
                         {
-                            masOrig[j] = Math.Log(float.Parse(w[j + 1], NumberStyles.Float | NumberStyles.AllowDecimalPoint | NumberStyles.AllowExponent, CultureInfo.InvariantCulture));
+                            masOrig[j] = float.Parse(w[j + 1], NumberStyles.Float | NumberStyles.AllowDecimalPoint | NumberStyles.AllowExponent, CultureInfo.InvariantCulture);
                         }
 
-                        for (int j = 0; j < 43; j++)
+                        int jMax = GetJMax(masOrig, mas1);
+
+                        double U0 = 0, T2 = 0, S = 0;
+                        if (-1 == MinSquareMas(jMax, masOrig, ref U0, ref T2, ref S))
                         {
-                            if (masOrig[j] > g1)
+                            Console.WriteLine("if (-1 == MinSquareMas(jMax, masOrig, ref U0, ref T2, ref S))");
+                            return;
+                        }
+                        for (int j = 0; j < jMax; j++)
+                        {
+                            mas1Delta[j] = Math.Log(Math.Sqrt((masOrig[j] - (U0 * Math.Exp(-(j * ed) / T2))) * (masOrig[j] - (U0 * Math.Exp(-(j * ed) / T2)))));
+                        }
+
+                        for (int j = 0; j < jMax; j++)
+                        {
+                            if (mas1Delta[j] > g1)
                             {
-                                if (masOrig[j] > g2)
+                                if (mas1Delta[j] > g2)
                                 {
-                                    if (masOrig[j] > g3)
+                                    if (mas1Delta[j] > g3)
                                     {
-                                        if (masOrig[j] > g4)
+                                        if (mas1Delta[j] > g4)
                                         {
-                                            amount = (masOrig[j] - g4) / (masMax[3] - g4);
+                                            amount = (mas1Delta[j] - g4) / (masMax[3] - g4);
                                             p.SetPixel(j, n, Blend(Color.Red, Color.Yellow, amount));
                                         }
                                         else
                                         {
-                                            amount = (masOrig[j] - g3) / (g4 - g3);
+                                            amount = (mas1Delta[j] - g3) / (g4 - g3);
                                             p.SetPixel(j, n, Blend(Color.Yellow, Color.Green, amount));
                                         }
                                     }
                                     else
                                     {
-                                        amount = (masOrig[j] - g2) / (g3 - g2);
+                                        amount = (mas1Delta[j] - g2) / (g3 - g2);
                                         p.SetPixel(j, n, Blend(Color.Green, Color.Blue, amount));
                                     }
                                 }
                                 else
                                 {
-                                    amount = (masOrig[j] - g1) / (g2 - g1);
+                                    amount = (mas1Delta[j] - g1) / (g2 - g1);
                                     p.SetPixel(j, n, Blend(Color.Blue, Color.Black, amount));
                                 }
                             }
                             else
                             {
-                                //amount = masOrig[j] / g1;
-                                //p.SetPixel(j, n, Blend(Color.Gray, Color.White, amount));
                                 p.SetPixel(j, n, Color.White);
                             }
                         }
@@ -144,6 +168,157 @@ namespace IGN2PNGConsole
             p.Dispose();
 
             Process.Start(@"D:\MyProgect\IGN\123456.png");
+        }
+
+        private static int GetJMax(double[] masOrig, double[] mas1)
+        {
+            int offset = 0;
+            int tailLen = 7;
+            double U0 = 0, T2 = 0, S = 0;
+            double U0_O = 0, T2_O = 0, S_O = 0;
+            double U0_L = 0, T2_L = 0, S_L = 0;
+            for (int i = 0; i < 43 - tailLen; i++)
+            {
+                for (int j = 0; j < tailLen; j++) mas1[j] = masOrig[j + offset];
+                if (-1 == MinSquareMas(tailLen, mas1, ref U0, ref T2, ref S)) break;
+                S_O = S;
+                if (-1 == MinSquareMasLin(tailLen, mas1, ref U0, ref T2, ref S)) break;
+                S_L = S;
+                if (S_O > S_L) break;
+                offset++;
+            }
+            return offset - 1;
+        }
+
+        private static int MinSquareMas(int n, double[] mas, ref double u, ref double t, ref double s)
+        {
+            double x, y, m;
+            double sum1, sum2, sum3, sum4;
+            //double ed = 2;
+
+            sum1 = sum2 = sum3 = sum4 = 0;
+            m = 0;
+
+            for (int i = 0; i < n; i++)
+            {
+                if (mas[i] < 0.001) continue;
+
+                x = i * ed;
+                y = Math.Log(mas[i]);
+                m++;
+
+                sum1 += x * y;
+                sum2 += x;
+                sum3 += y;
+                sum4 += x * x;
+            }
+
+            if (m < 3)
+            {
+                u = -1;
+                t = -1;
+                s = -1;
+                return -1;
+            }
+
+            double b = (sum2 * sum3 - m * sum1) / (sum2 * sum2 - m * sum4);
+            double a = (sum3 - b * sum2) / m;
+
+            u = Math.Exp(a);
+            t = -1 / b;
+
+            if (double.IsInfinity(u)) return -1;
+            if (double.IsInfinity(t)) return -1;
+
+            if (0 > u) return -1;
+            if (0 > t) return -1;
+
+            sum1 = 0;
+            m = 0;
+            for (int i = 0; i < n; i++)
+            {
+                if (mas[i] < 0.001) continue;
+
+                x = i * ed;
+                y = Math.Log(mas[i]);
+                //y = mas[i];
+                m++;
+                sum1 += (y - a - b * x) * (y - a - b * x);
+                //sum1 += (y - (u * Math.Exp(-x / t))) * (y - (u * Math.Exp(-x / t)));
+
+            }
+
+            if (m > 2)
+            {
+                s = sum1 / (m - 2);
+            }
+            else { s = 0; }
+
+            return 0;
+        }
+        private static int MinSquareMasLin(int n, double[] mas, ref double u, ref double t, ref double s)
+        {
+            double x, y, m;
+            double sum1, sum2, sum3, sum4;
+            //double ed = 2;
+            sum1 = sum2 = sum3 = sum4 = 0;
+            m = 0;
+
+            for (int i = 0; i < n; i++)
+            {
+                if (mas[i] < 0.001) continue;
+
+                x = i * ed;
+                //y = Math.Log(mas[i]);
+                y = mas[i];
+                m++;
+
+                sum1 += x * y;
+                sum2 += x;
+                sum3 += y;
+                sum4 += x * x;
+            }
+
+            if (m < 3)
+            {
+                u = -1;
+                t = -1;
+                s = -1;
+                return -1;
+            }
+
+            double b = (sum2 * sum3 - m * sum1) / (sum2 * sum2 - m * sum4);
+            double a = (sum3 - b * sum2) / m;
+
+            //u = Math.Exp(a);
+            u = a;
+            t = -1 / b;
+
+            if (double.IsInfinity(u)) return -1;
+            if (double.IsInfinity(t)) return -1;
+
+            if (0 > u) return -1;
+            if (0 > t) return -1;
+
+            sum1 = 0;
+            for (int i = 0; i < n; i++)
+            {
+                if (mas[i] < 0.001) continue;
+
+                x = i * ed;
+                //y = Math.Log(mas[i]);
+                y = mas[i];
+                m++;
+                sum1 += (y - a - b * x) * (y - a - b * x);
+            }
+
+            if (m > 2)
+            {
+                s = sum1 / (m - 2);
+            }
+            else { s = 0; }
+
+            return 0;
         }
 
         /// <summary>Blends the specified colors together.</summary>

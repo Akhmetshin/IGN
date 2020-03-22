@@ -607,7 +607,7 @@ namespace IGNViewNew3
 
                 if (-1 == MinSquareMas(jMax, masOrig, ref U0, ref T2, ref S))
                 {
-                    MessageBox.Show("if (-1 == MinSquareMasLin(tailLen, mas1, ref U0, ref T2, ref S))");
+                    MessageBox.Show("if (-1 == MinSquareMas(jMax, masOrig, ref U0, ref T2, ref S))");
                     return;
                 }
 
