@@ -25,6 +25,10 @@ namespace IGN2PNGConsole
             Thread.CurrentThread.CurrentCulture = culture;
             Thread.CurrentThread.CurrentUICulture = culture;
 
+            string name30 = @"D:\MyProgect\IGN\1017_спады 30.txt";
+            string namePNG = @"D:\MyProgect\1017.png";
+            string nameScale = @"D:\MyProgect\1017_Scale.png";
+
             string line;
             string[] w;
             w = new string[43];
@@ -35,7 +39,7 @@ namespace IGN2PNGConsole
             int n = 0;
             try
             {
-                StreamReader sr30 = new StreamReader(@"D:\MyProgect\IGN\1017_спады 30.txt");
+                StreamReader sr30 = new StreamReader(name30);
                 line = sr30.ReadLine();
                 while ((line = sr30.ReadLine()) != null)
                 {
@@ -93,8 +97,8 @@ namespace IGN2PNGConsole
             n--;
             try
             {
-                StreamReader sr30 = new StreamReader(@"D:\MyProgect\IGN\1017_спады 30.txt");
-                StreamWriter sw = new StreamWriter(@"D:\MyProgect\amount.txt");
+                StreamReader sr30 = new StreamReader(name30);
+                //StreamWriter sw = new StreamWriter(@"D:\MyProgect\amount.txt");
 
                 line = sr30.ReadLine();
                 while ((line = sr30.ReadLine()) != null)
@@ -103,7 +107,7 @@ namespace IGN2PNGConsole
                     if (w.Length > 0)
                     {
                         fd = float.Parse(w[0], NumberStyles.Float | NumberStyles.AllowDecimalPoint | NumberStyles.AllowExponent, CultureInfo.InvariantCulture);
-                        sw.Write("{0,7:f2} ", fd);
+                        //sw.Write("{0,7:f2} ", fd);
 
                         for (int j = 0; j < 43; j++)
                         {
@@ -159,20 +163,20 @@ namespace IGN2PNGConsole
                                 amount = -1;
                                 p.SetPixel(j, n, Blend(Color.Blue, Color.Gray, mas1Delta[j]));
                             }
-                            sw.Write("{0,7:f2} {1,7:f2}  ", mas1Delta[j], amount);
+                            //sw.Write("{0,7:f2} {1,7:f2}  ", mas1Delta[j], amount);
                         }
                         n--;
-                        sw.WriteLine();
+                        //sw.WriteLine();
                     }
                 }
-                sw.Close();
+                //sw.Close();
                 sr30.Close();
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
             }
-            p.Save(@"D:\MyProgect\123456.png", ImageFormat.Png);
+            p.Save(namePNG, ImageFormat.Png);
 
             p.Dispose();
 
@@ -191,7 +195,7 @@ namespace IGN2PNGConsole
                 for (int j = 200; j < 250; j++) pS.SetPixel(j, i, Blend(Color.Blue, Color.Gray, 1 - 0.02 * (j - 200)));
             }
 
-            pS.Save(@"D:\MyProgect\123456_Scale.png", ImageFormat.Png);
+            pS.Save(nameScale, ImageFormat.Png);
 
             pS.Dispose();
         }
