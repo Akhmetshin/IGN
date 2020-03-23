@@ -15,23 +15,24 @@ namespace IGN2PNGConsole
     class Program
     {
         static double ed = 100;
+        static int nKanal = 45;
         static void Main(string[] args)
         {
-            double[] masOrig = new double[45]; // !!! 45 - это для поиска jMax !!!
-            double[] mas1 = new double[43];
-            double[] mas1Delta = new double[43];
+            double[] masOrig = new double[nKanal + 2]; // !!! это для поиска jMax !!!
+            double[] mas1 = new double[nKanal];
+            double[] mas1Delta = new double[nKanal];
 
             var culture = new System.Globalization.CultureInfo("en-US");
             Thread.CurrentThread.CurrentCulture = culture;
             Thread.CurrentThread.CurrentUICulture = culture;
 
-            string name30 = @"D:\MyProgect\IGN\1017_спады 30.txt";
-            string namePNG = @"D:\MyProgect\1017.png";
-            string nameScale = @"D:\MyProgect\1017_Scale.png";
+            string name30 = @"D:\MyProgect\IGN_Data\__30n_d_2001_41.txt";
+            string namePNG = @"D:\MyProgect\IGN_Data\__30n_d_2001_41.png";
+            string nameScale = @"D:\MyProgect\IGN_Data\__30n_d_2001_41_Scale.png";
 
             string line;
             string[] w;
-            w = new string[43];
+            w = new string[nKanal];
             char[] delimiterChars = { ' ', '\t', ';' };
             float fd = 0;
             double[] masMax = new double[5];
@@ -47,7 +48,7 @@ namespace IGN2PNGConsole
                     if (w.Length > 0)
                     {
                         fd = float.Parse(w[0], NumberStyles.Float | NumberStyles.AllowDecimalPoint | NumberStyles.AllowExponent, CultureInfo.InvariantCulture);
-                        for (int j = 0; j < 43; j++)
+                        for (int j = 0; j < nKanal; j++)
                         {
                             masOrig[j] = float.Parse(w[j + 1], NumberStyles.Float | NumberStyles.AllowDecimalPoint | NumberStyles.AllowExponent, CultureInfo.InvariantCulture);
                         }
@@ -79,7 +80,7 @@ namespace IGN2PNGConsole
                 Console.WriteLine(ex.Message);
             }
 
-            int W = 43;
+            int W = nKanal;
             int H = n;
 
             Bitmap p = new Bitmap(W, H);
@@ -109,7 +110,7 @@ namespace IGN2PNGConsole
                         fd = float.Parse(w[0], NumberStyles.Float | NumberStyles.AllowDecimalPoint | NumberStyles.AllowExponent, CultureInfo.InvariantCulture);
                         //sw.Write("{0,7:f2} ", fd);
 
-                        for (int j = 0; j < 43; j++)
+                        for (int j = 0; j < nKanal; j++)
                         {
                             masOrig[j] = float.Parse(w[j + 1], NumberStyles.Float | NumberStyles.AllowDecimalPoint | NumberStyles.AllowExponent, CultureInfo.InvariantCulture);
                         }
@@ -207,7 +208,7 @@ namespace IGN2PNGConsole
             double U0 = 0, T2 = 0, S = 0;
             double U0_O = 0, T2_O = 0, S_O = 0;
             double U0_L = 0, T2_L = 0, S_L = 0;
-            for (int i = 0; i < 43 - tailLen; i++)
+            for (int i = 0; i < nKanal - tailLen; i++)
             {
                 for (int j = 0; j < tailLen; j++) mas1[j] = masOrig[j + offset];
                 if (-1 == MinSquareMas(tailLen, mas1, ref U0, ref T2, ref S)) break;
