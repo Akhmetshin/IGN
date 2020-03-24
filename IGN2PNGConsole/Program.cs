@@ -53,8 +53,23 @@ namespace IGN2PNGConsole
                             masOrig[j] = float.Parse(w[j + 1], NumberStyles.Float | NumberStyles.AllowDecimalPoint | NumberStyles.AllowExponent, CultureInfo.InvariantCulture);
                         }
 
-                        int jMax = GetJMax(masOrig, mas1);
+                        int jMax = -1;
+                        for (int i = 0; i < masOrig.Length / 2; i++)
+                        {
+                            if (jMax == -1)
+                            {
+                                jMax = GetJMax(masOrig, mas1);
+                            }
+                            else break;
+                            for (int j = 0; j < masOrig.Length - 1; j++) masOrig[j] = masOrig[j + 1];
+                            masOrig[masOrig.Length - 1] = 0;
+                        }
 
+                        if(jMax==-1)
+                        {
+                            Console.WriteLine("int jMax = GetJMax(masOrig, mas1);");
+                            return;
+                        }
                         double U0 = 0, T2 = 0, S = 0;
                         if (-1 == MinSquareMas(jMax, masOrig, ref U0, ref T2, ref S))
                         {
@@ -115,7 +130,23 @@ namespace IGN2PNGConsole
                             masOrig[j] = float.Parse(w[j + 1], NumberStyles.Float | NumberStyles.AllowDecimalPoint | NumberStyles.AllowExponent, CultureInfo.InvariantCulture);
                         }
 
-                        int jMax = GetJMax(masOrig, mas1);
+                        int jMax = -1;
+                        for (int i = 0; i < masOrig.Length / 2; i++)
+                        {
+                            if (jMax == -1)
+                            {
+                                jMax = GetJMax(masOrig, mas1);
+                            }
+                            else break;
+                            for (int j = 0; j < masOrig.Length - 1; j++) masOrig[j] = masOrig[j + 1];
+                            masOrig[masOrig.Length - 1] = 0;
+                        }
+
+                        if (jMax == -1)
+                        {
+                            Console.WriteLine("int jMax = GetJMax(masOrig, mas1);");
+                            return;
+                        }
 
                         double U0 = 0, T2 = 0, S = 0;
                         if (-1 == MinSquareMas(jMax, masOrig, ref U0, ref T2, ref S))
