@@ -29,6 +29,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IGNViewNew3", "IGNViewNew3\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IGN2PNGConsole", "IGN2PNGConsole\IGN2PNGConsole.csproj", "{4002D867-A3EA-4FDC-A36D-5014C82ED109}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IGNView4", "IGNView4\IGNView4.csproj", "{00905DF1-3CE8-4A18-8A1F-BC0E06775EAC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -87,6 +89,10 @@ Global
 		{4002D867-A3EA-4FDC-A36D-5014C82ED109}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4002D867-A3EA-4FDC-A36D-5014C82ED109}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4002D867-A3EA-4FDC-A36D-5014C82ED109}.Release|Any CPU.Build.0 = Release|Any CPU
+		{00905DF1-3CE8-4A18-8A1F-BC0E06775EAC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{00905DF1-3CE8-4A18-8A1F-BC0E06775EAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{00905DF1-3CE8-4A18-8A1F-BC0E06775EAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{00905DF1-3CE8-4A18-8A1F-BC0E06775EAC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
