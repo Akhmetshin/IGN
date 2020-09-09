@@ -34,7 +34,7 @@ namespace IGNView4
             ed = 100;
 
             SolidBrushB = new SolidBrush(BackColor);
-            r = new Rectangle(0, 0, Width - 100, h0 + 1);
+            r = new Rectangle(0, 0, Width - 100, h0 + 10);
 
             graf = this.CreateGraphics();
             pen1 = new Pen(Color.FromArgb(255, 0, 0, 0), 2);
@@ -126,13 +126,13 @@ namespace IGNView4
                 pf1[j].Y = (float)(h0 - masOrig[j] / 50);
                 mas2[j] = j + 1;
             }
-            graf.DrawLines(Pens.Black, pf1);
+            graf.DrawLines(pen1, pf1);
 
             double a = 0;
             double b = 0;
             double R = 0;
 
-            GipReg(jMax, masOrig, mas2, ref a, ref b, ref R);
+            GipReg(jMax, mas2, masOrig, ref a, ref b, ref R);
 
             label5.Text = a.ToString("F4");
             label7.Text = b.ToString("F4");
@@ -142,13 +142,45 @@ namespace IGNView4
 
             for (int j = 0; j < jMax; j++)
             {
-                double yt = masOrig[j] - (a + b / mas2[j]);
+                double yt = a + b / mas2[j];
                 pf2[j].X = j * 20;
                 pf2[j].Y = (float)(h0 - yt / 50);
-                mas2[j] = j + 1;
             }
 
             graf.DrawLines(Pens.Red, pf2);
+
+            ExpReg(jMax, mas2, masOrig, ref a, ref b, ref R);
+
+            label16.Text = a.ToString("F4");
+            label14.Text = b.ToString("F4");
+            label12.Text = R.ToString("F4");
+
+            if (double.IsNaN(a)) return;
+
+            for (int j = 0; j < jMax; j++)
+            {
+                double yt = Math.Exp(a + b * mas2[j]);
+                pf2[j].X = j * 20;
+                pf2[j].Y = (float)(h0 - yt / 50);
+            }
+            graf.DrawLines(Pens.Green, pf2);
+
+            PowReg(jMax, mas2, masOrig, ref a, ref b, ref R);
+
+            //label16.Text = a.ToString("F4");
+            //label14.Text = b.ToString("F4");
+            //label12.Text = R.ToString("F4");
+
+            if (double.IsNaN(a)) return;
+
+            for (int j = 0; j < jMax; j++)
+            {
+                double yt = a * Math.Pow(mas2[j], b);
+                pf2[j].X = j * 20;
+                pf2[j].Y = (float)(h0 - yt / 50);
+            }
+            graf.DrawLines(Pens.Blue, pf2);
+
         }
         private int MinSquareMas(int n, double[] mas, ref double u, ref double t, ref double s)
         {
@@ -362,6 +394,7 @@ namespace IGNView4
             return 0;
         }
 
+        /// Гиперболическая регрессия
         private static int GipReg(int n, double[] x, double[] y, ref double a, ref double b, ref double R)
         {
             double sx = 0;
